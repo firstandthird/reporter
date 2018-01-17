@@ -5,6 +5,7 @@ class Reporter {
   constructor(options = {}) {
     this.options = options;
     this.server = Hapi.server({
+      port: process.env.PORT || 8080,
       debug: {
         request: ['error']
       }
