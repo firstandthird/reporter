@@ -30,6 +30,8 @@ class Reporter {
       config: {
         plugins: {
           'hapi-transform-csv': {
+          },
+          'hapi-transform-table': {
           }
         }
       },
@@ -58,6 +60,7 @@ class Reporter {
       }
     });
     await this.server.register(require('hapi-transform-csv'));
+    await this.server.register(require('hapi-transform-table'));
   }
 
   async start() {

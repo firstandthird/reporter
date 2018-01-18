@@ -1,6 +1,5 @@
 const tap = require('tap');
 const Reporter = require('../');
-const skip = function() {};
 
 tap.test('addReport is method', (t) => {
   const reporter = new Reporter();
@@ -33,7 +32,7 @@ tap.test('set args', async (t) => {
 
 tap.test('addReport csv', async (t) => {
   const reporter = new Reporter();
-  reporter.addReport('test', () => ({ data: { status: 'ok' } }));
+  reporter.addReport('test', () => ({ status: 'ok' }));
 
   await reporter.start();
   const { payload } = await reporter.server.inject({ url: '/test.csv' });
@@ -41,25 +40,16 @@ tap.test('addReport csv', async (t) => {
   await reporter.stop();
   t.end();
 });
-skip('addReport html', async (t) => {
+tap.test('addReport html', async (t) => {
   const reporter = new Reporter();
   reporter.addReport('test', () => ({ status: 'ok' }));
 
   await reporter.start();
   const { payload } = await reporter.server.inject({ url: '/test.html' });
-  t.equals(payload, `
-  <table>
-    <thead>
-      <tr>
-        <th>status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>ok</td>
-      </tr>
-    </tbody>
-  `);
+  t.equals(payload, `<table>
+<tr><th>status</th></tr>
+<tr><td>ok</td></tr>
+</table>`);
   await reporter.stop();
   t.end();
 });
