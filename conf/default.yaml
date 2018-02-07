@@ -1,0 +1,8 @@
+plugins:
+  './plugins/plugins.js':
+  hapi-logr:
+    reporters:
+      flat:
+        reporter: 'logr-flat'
+  hapi-transform-table:
+  hapi-transform-csv:

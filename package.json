@@ -33,10 +33,10 @@
   "dependencies": {
     "boom": "^7.1.1",
     "flat": "^4.0.0",
-    "hapi": "^17.2.0",
     "hapi-logr": "^4.0.1",
     "hapi-transform-csv": "^1.0.1",
     "hapi-transform-table": "^1.0.1",
-    "logr-flat": "^3.1.0"
+    "logr-flat": "^3.1.0",
+    "rapptor": "^5.2.0"
   }
 }

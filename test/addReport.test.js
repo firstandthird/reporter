@@ -1,35 +1,51 @@
+const Rapptor = require('rapptor');
 const tap = require('tap');
-const Reporter = require('../');
 
-tap.test('addReport is method', (t) => {
-  const reporter = new Reporter();
-  t.equals(typeof reporter.addReport, 'function');
+tap.test('can start instance', async(t) => {
+  const rapptor = new Rapptor({});
+  await rapptor.start();
+  await rapptor.stop();
+  t.end();
+});
+
+// tap.test('setArgs fn', async(t) => {
+//   const rapptor = new Rapptor({});
+//   await rapptor.start();
+//   await rapptor.stop();
+//   t.equals(typeof rapptor.m.setArgs, 'function');
+//   t.end();
+// });
+
+tap.test('addReport is method', async(t) => {
+  const rapptor = new Rapptor({});
+  await rapptor.start();
+  await rapptor.stop();
+  t.equals(typeof rapptor.server.methods.addReport, 'function');
   t.end();
 });
 
 tap.test('addReport exposes route', async (t) => {
-  const reporter = new Reporter();
-  reporter.addReport('test', () => ({ status: 'ok' }));
-
-  await reporter.start();
-  const { payload } = await reporter.server.inject({ url: '/test' });
+  const rapptor = new Rapptor({});
+  await rapptor.start();
+  rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
+  const { payload } = await rapptor.server.inject({ url: '/test' });
   t.equals(payload, JSON.stringify({ status: 'ok' }));
-  await reporter.stop();
+  await rapptor.stop();
   t.end();
 });
 
 tap.test('set args', async (t) => {
-  const reporter = new Reporter();
-  reporter.setArgs({ arg1: true }, { arg2: true });
-  reporter.addReport('test', (arg1, arg2) => ({ arg1, arg2 }));
+  const rapptor = new Rapptor({});
+  await rapptor.start();
+  rapptor.server.methods.setArgs({ arg1: true }, { arg2: true });
+  rapptor.server.methods.addReport('test', (arg1, arg2) => ({ arg1, arg2 }));
 
-  await reporter.start();
-  const { payload } = await reporter.server.inject({ url: '/test' });
+  const { payload } = await rapptor.server.inject({ url: '/test' });
   t.equals(payload, JSON.stringify({ arg1: { arg1: true }, arg2: { arg2: true } }));
-  await reporter.stop();
+  await rapptor.stop();
   t.end();
 });
-
+/*
 tap.test('addReport csv', async (t) => {
   const reporter = new Reporter();
   reporter.addReport('test', () => ({ status: 'ok' }));
@@ -53,3 +69,4 @@ tap.test('addReport html', async (t) => {
   await reporter.stop();
   t.end();
 });
+*/
