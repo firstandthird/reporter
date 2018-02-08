@@ -5,19 +5,17 @@ exports.home = {
   path: '/{name}',
   config: {
     plugins: {
-      'hapi-transform-csv': {
-      },
-      'hapi-transform-table': {
-      }
+      'hapi-transform-csv': {},
+      'hapi-transform-table': {}
     }
   },
   handler(request, h) {
     const server = request.server;
     const { name } = request.params;
-    const fn = server.reports[name];
+    const fn = server.reports.methods[name];
     if (!fn) {
       throw Boom.notFound();
     }
-    return fn(...server.args);
+    return fn(...server.reports.args);
   }
 };
