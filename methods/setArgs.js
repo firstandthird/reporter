@@ -1,5 +1,5 @@
 module.exports = {
-  method(args, fn) {
+  method(...args) {
     this.reports.args = args;
   }
 };

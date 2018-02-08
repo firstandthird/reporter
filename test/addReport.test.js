@@ -29,7 +29,7 @@ tap.test('addReport exposes route', async (t) => {
 tap.test('set args', async (t) => {
   const rapptor = new Rapptor({});
   await rapptor.start();
-  rapptor.server.methods.setArgs([{ arg1: true }, { arg2: true }]);
+  rapptor.server.methods.setArgs({ arg1: true }, { arg2: true });
   rapptor.server.methods.addReport('test', (arg1, arg2) => ({ arg1, arg2 }));
   const { payload } = await rapptor.server.inject({ url: '/test' });
   t.equals(payload, JSON.stringify({ arg1: { arg1: true }, arg2: { arg2: true } }));
