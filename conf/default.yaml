@@ -1,7 +1,6 @@
 plugins:
   './plugins/reporter.js':
+    _dependencies:
+      - 'hapi-method-loader'
   hapi-transform-table:
   hapi-transform-csv:
-s3:
-  bucket: '{{ENV.AWS_BUCKET}}'
-reportsDir: 'reports'
