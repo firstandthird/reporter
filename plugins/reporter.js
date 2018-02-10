@@ -9,12 +9,7 @@ const register = (server, options) => {
   const reportDir = server.settings.app.reportsDir;
   if (fs.existsSync(reportDir)) {
     fs.readdirSync(reportDir).forEach(file => {
-      const report = require(path.join(reportDir, file));
-      if (typeof report.cache === 'function') {
-        report.options = report.options || {};
-        report.options.cache = report.options.cache(server, options);
-      }
-      server.methods.addReport(path.basename(file, '.js'), report);
+      server.methods.addReport(path.basename(file, '.js'), require(path.join(reportDir, file)));
     });
   }
 };
