@@ -1,6 +1,6 @@
 const Rapptor = require('rapptor');
 const tap = require('tap');
-
+/*
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({ configPrefix: 'reporter' });
   await rapptor.start();
@@ -67,6 +67,16 @@ tap.test('loads reports from file', async (t) => {
   await rapptor.start();
   const { payload } = await rapptor.server.inject({ url: '/testreport.csv' });
   t.equals(payload, '"status"\n"ok"');
+  await rapptor.stop();
+  t.end();
+});
+*/
+tap.test('can save things to s3', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+  });
+  await rapptor.start();
+  rapptor.server.uploadToS3('reporter_test', 'this is some stuff I am saving');
   await rapptor.stop();
   t.end();
 });
