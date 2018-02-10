@@ -9,7 +9,12 @@ module.exports = {
       fn.options = fn.options || {};
       fn.options.cache = fn.options.cache(this, this.settings.app);
     }
-
-    this.reports.methods[name] = fn;
+    if (fn.options) {
+      fn.options.bind = this;
+    } else {
+      fn.options = { bind: this };
+    }
+    // reports are stored as server.methods.reports[name] where hapi can cache them:
+    this.method(`reports.${name}`, fn.method, fn.options);
   }
 };
