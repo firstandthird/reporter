@@ -1,6 +1,6 @@
 const Rapptor = require('rapptor');
 const tap = require('tap');
-
+/*
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({ configPrefix: 'reporter' });
   await rapptor.start();
@@ -59,8 +59,38 @@ tap.test('addReport html', async (t) => {
   await rapptor.stop();
   t.end();
 });
+*/
+tap.test('reports can have caching', async (t) => {
+  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  await rapptor.start();
+  let count = 0;
+  let cacheHits = 0;
+  const testMethod = () => {
+    count++;
+    return { count };
+  };
+  testMethod.options = {
+    cache: (server, options) => {
+      console.log('+')
+      console.log('+')
+      console.log('+')
+      console.log('+')
+      console.log(server)
+      console.log(options)
+      cacheHits++;
+      return 1;
+    }
+  };
+  rapptor.server.methods.addReport('test', testMethod);
+  const { payload } = await rapptor.server.inject({ url: '/test.csv' });
+  t.equals(payload, '"count"\n"1"');
+  const { payload2 } = await rapptor.server.inject({ url: '/test.csv' });
+  t.equals(payload2, '"count"\n"1"');
+  await rapptor.stop();
+  t.end();
+});
 
-tap.test('loads reports from file', async (t) => {
+tap.test('auto-load reports from file', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
   });
