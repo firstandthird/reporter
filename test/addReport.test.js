@@ -1,5 +1,6 @@
 const Rapptor = require('rapptor');
 const tap = require('tap');
+const os = require('os');
 
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({ configPrefix: 'reporter' });
@@ -42,7 +43,7 @@ tap.test('addReport csv', async (t) => {
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test.csv' });
-  t.equals(payload, '"status"\n"ok"');
+  t.equals(payload, `"status"${os.EOL}"ok"`);
   await rapptor.stop();
   t.end();
 });
@@ -52,21 +53,53 @@ tap.test('addReport html', async (t) => {
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test.html' });
-  t.equals(payload, `<table>
-<tr><th>status</th></tr>
-<tr><td>ok</td></tr>
-</table>`);
+  t.equals(payload, `<table>${os.EOL}<tr><th>status</th></tr>${os.EOL}<tr><td>ok</td></tr>${os.EOL}</table>`);
   await rapptor.stop();
   t.end();
 });
 
-tap.test('loads reports from file', async (t) => {
+tap.test('reports can have caching', async (t) => {
+  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  await rapptor.start();
+  let count = 0;
+  let cacheSetup = false;
+  const testMethod = {
+    method() {
+      count++;
+      return { count };
+    },
+    options: {
+      cache: (serverToCache, options) => {
+        cacheSetup = true;
+        return {
+          expiresIn: 1000,
+          generateTimeout: 500
+        };
+      }
+    }
+  };
+  rapptor.server.methods.addReport('test', testMethod);
+  t.equal(cacheSetup, true, 'calls options.cache to set up server cache');
+  const response1 = await rapptor.server.inject({ method: 'get', url: '/test.csv' });
+  const response2 = await rapptor.server.inject({ method: 'get', url: '/test.csv' });
+  t.equal(count, 1, 'only calls the method once');
+  t.equal(response1.payload, response2.payload, 'caches results from previous call');
+  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  await wait(2000);
+  const response3 = await rapptor.server.inject({ method: 'get', url: '/test.csv' });
+  t.notEqual(response1.payload, response3.payload, 'refreshes cache after expiresIn has elapsed');
+  t.equal(count, 2, 'refreshes cache after expiresIn has elapsed');
+  await rapptor.stop();
+  t.end();
+});
+
+tap.test('auto-load reports from file', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
   });
   await rapptor.start();
   const { payload } = await rapptor.server.inject({ url: '/testreport.csv' });
-  t.equals(payload, '"status"\n"ok"');
+  t.equals(payload, `"status"${os.EOL}"ok"`);
   await rapptor.stop();
   t.end();
 });
