@@ -4,3 +4,7 @@ plugins:
       - 'hapi-method-loader'
   hapi-transform-table:
   hapi-transform-csv:
+  hapi-method-loader:
+    path: '{{LIBDIR}}/methods'
+  hapi-route-loader:
+    path: '{{LIBDIR}}/routes'

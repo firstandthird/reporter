@@ -4,7 +4,12 @@ const Rapptor = require('rapptor');
 
 const main = async function() {
   const service = new Rapptor({
-    configPrefix: 'reporter'
+    configPath: __dirname,
+    configFile: process.cwd(),
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: __dirname
+    }
   });
   await service.start();
 };
