@@ -1,10 +1,10 @@
 plugins:
-  './plugins/reporter.js':
-    _dependencies:
-      - 'hapi-method-loader'
-  hapi-transform-table:
-  hapi-transform-csv:
   hapi-method-loader:
     path: '{{LIBDIR}}/methods'
   hapi-route-loader:
     path: '{{LIBDIR}}/routes'
+  '{{LIBDIR}}/plugins/reporter.js':
+    _dependencies:
+      - 'hapi-method-loader'
+  hapi-transform-table:
+  hapi-transform-csv:

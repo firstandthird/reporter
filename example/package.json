@@ -1,0 +1,10 @@
+{
+  "name": "reports",
+  "scripts": {
+    "start": "reporter"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
