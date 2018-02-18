@@ -103,3 +103,32 @@ tap.test('auto-load reports from file', async (t) => {
   await rapptor.stop();
   t.end();
 });
+
+// This test just verifies that calls to uploadToS3 don't throw errors.
+// You may want to verify the reporter_test.csv and .html files were uploaded to your bucket:
+tap.test('can save things to s3', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+  });
+  await rapptor.start();
+  await rapptor.server.uploadToS3('reporter_test.csv', 'this,is,some,stuff,I,am,saving');
+  await rapptor.server.uploadToS3('reporter_test.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
+  await rapptor.stop();
+  t.end();
+});
+
+tap.test('can run a report and pass the results to uploadToS3', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+  });
+  await rapptor.start();
+  await rapptor.server.methods.executeAndSaveReport('/testreport.html');
+  await rapptor.server.methods.executeAndSaveReport('/testreport'); // should default to testreport.csv
+  try {
+    await rapptor.server.methods.executeAndSaveReport('/gibberish');
+  } catch (e) {
+    t.equal(e.toString(), 'Error: there was an error while executing report /gibberish.csv');
+  }
+  await rapptor.stop();
+  t.end();
+});

@@ -15,6 +15,7 @@ const register = (server, options) => {
 };
 
 exports.plugin = {
+  name: 'reporter',
   register,
   once: true,
   pkg: require('../package.json')
