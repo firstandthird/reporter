@@ -1,4 +1,4 @@
 s3:
   bucket: '{{ENV.AWS_BUCKET}}'
   profile: '{{ENV.AWS_PROFILE}}'
-reportsDir: '{{CWD}}\reports'
+reportsDir: '{{CWD}}/test/reports'

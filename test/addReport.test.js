@@ -3,14 +3,24 @@ const tap = require('tap');
 const os = require('os');
 
 tap.test('can start instance', async(t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   await rapptor.stop();
   t.end();
 });
 
 tap.test('addReport is method', async(t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   await rapptor.stop();
   t.equals(typeof rapptor.server.methods.addReport, 'function');
@@ -18,7 +28,12 @@ tap.test('addReport is method', async(t) => {
 });
 
 tap.test('addReport exposes route', async (t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test' });
@@ -28,7 +43,12 @@ tap.test('addReport exposes route', async (t) => {
 });
 
 tap.test('set args', async (t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   rapptor.server.methods.setArgs({ arg1: true }, { arg2: true });
   rapptor.server.methods.addReport('test', (arg1, arg2) => ({ arg1, arg2 }));
@@ -39,7 +59,12 @@ tap.test('set args', async (t) => {
 });
 
 tap.test('addReport csv', async (t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test.csv' });
@@ -49,7 +74,12 @@ tap.test('addReport csv', async (t) => {
 });
 
 tap.test('addReport html', async (t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test.html' });
@@ -59,7 +89,12 @@ tap.test('addReport html', async (t) => {
 });
 
 tap.test('reports can have caching', async (t) => {
-  const rapptor = new Rapptor({ configPrefix: 'reporter' });
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
   await rapptor.start();
   let count = 0;
   let cacheSetup = false;
@@ -96,6 +131,9 @@ tap.test('reports can have caching', async (t) => {
 tap.test('auto-load reports from file', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
   });
   await rapptor.start();
   const { payload } = await rapptor.server.inject({ url: '/testreport.csv' });
@@ -109,6 +147,9 @@ tap.test('auto-load reports from file', async (t) => {
 tap.test('can save things to s3', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
   });
   await rapptor.start();
   await rapptor.server.uploadToS3('reporter_test.csv', 'this,is,some,stuff,I,am,saving');
@@ -120,6 +161,9 @@ tap.test('can save things to s3', async (t) => {
 tap.test('can run a report and pass the results to uploadToS3', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
   });
   await rapptor.start();
   await rapptor.server.methods.executeAndSaveReport('/testreport.html');
