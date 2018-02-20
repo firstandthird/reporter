@@ -1,0 +1,11 @@
+plugins:
+  hapi-method-loader:
+    path: '{{LIBDIR}}/methods'
+  hapi-route-loader:
+    path: '{{LIBDIR}}/routes'
+  '{{LIBDIR}}/plugins/reporter.js':
+    _dependencies:
+      - 'hapi-method-loader'
+  './plugins/aws.js':
+  hapi-transform-table:
+  hapi-transform-csv:
