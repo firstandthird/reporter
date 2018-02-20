@@ -12,6 +12,16 @@ const register = (server, options) => {
       server.methods.addReport(path.basename(file, '.js'), require(path.join(reportDir, file)));
     });
   }
+  if (options.recurringReports) {
+    options.recurringReports.forEach(recurringReport => {
+      // run the report and save to s3:
+      server.scheduleMethod(
+        recurringReport.interval,
+        `executeAndSaveReport('${recurringReport.name}.${recurringReport.format}',
+         ${!recurringReport.saveToS3})`
+      );
+    });
+  }
 };
 
 exports.plugin = {

@@ -1,10 +1,13 @@
 plugins:
+  hapi-method-scheduler:
+    schedule: []
   hapi-method-loader:
     path: '{{LIBDIR}}/methods'
   hapi-route-loader:
     path: '{{LIBDIR}}/routes'
   '{{LIBDIR}}/plugins/reporter.js':
     _dependencies:
+      - 'hapi-method-scheduler'
       - 'hapi-method-loader'
   './plugins/aws.js':
   hapi-transform-table:

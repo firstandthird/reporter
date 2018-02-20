@@ -176,3 +176,16 @@ tap.test('can run a report and pass the results to uploadToS3', async (t) => {
   await rapptor.stop();
   t.end();
 });
+
+tap.test('can specify reports to re-run at regular intervals', async(t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  await new Promise(resolve => setTimeout(resolve, 4000));
+  await rapptor.stop();
+  t.end();
+});
