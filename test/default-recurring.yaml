@@ -7,8 +7,18 @@ plugins:
     path: '{{LIBDIR}}/routes'
   '{{LIBDIR}}/plugins/reporter.js':
     _dependencies:
-      - 'hapi-method-scheduler'
       - 'hapi-method-loader'
+      - 'hapi-method-scheduler'
+    recurringReports:
+      -
+        name: 'testrecurring'
+        interval: '* * * * * *'
+        format: 'csv'
+        saveToS3: true
   './plugins/aws.js':
   hapi-transform-table:
   hapi-transform-csv:
+s3:
+  bucket: '{{ENV.AWS_BUCKET}}'
+  profile: '{{ENV.AWS_PROFILE}}'
+reportsDir: '{{CWD}}/test/reports'

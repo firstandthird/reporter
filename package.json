@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "boom": "^7.1.1",
+    "hapi-method-scheduler": "^4.0.0",
     "hapi-transform-csv": "^1.0.1",
     "hapi-transform-table": "^1.0.1",
     "rapptor": "^5.2.0",
