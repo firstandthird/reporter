@@ -14,7 +14,7 @@ const register = (server, options) => {
   }
   if (options.recurringReports) {
     options.recurringReports.forEach(recurringReport => {
-      // run the report and save to s3:
+      // run the report, save to s3 if saveTos3 is true:
       server.scheduleMethod(
         recurringReport.interval,
         `executeAndSaveReport('${recurringReport.name}.${recurringReport.format}',
