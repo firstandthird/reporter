@@ -176,7 +176,7 @@ tap.test('can run a report and pass the results to uploadToS3', async (t) => {
   await rapptor.stop();
   t.end();
 });
-/*
+
 tap.test('can specify reports to re-run at regular intervals', async(t) => {
   const rapptor = new Rapptor({
     configPath: __dirname,
@@ -190,4 +190,3 @@ tap.test('can specify reports to re-run at regular intervals', async(t) => {
   await rapptor.stop();
   t.end();
 });
-*/
