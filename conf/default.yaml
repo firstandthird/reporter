@@ -9,6 +9,6 @@ plugins:
     _dependencies:
       - 'hapi-method-scheduler'
       - 'hapi-method-loader'
-  './plugins/aws.js':
+  '{{LIBDIR}}/plugins/aws.js':
   hapi-transform-table:
   hapi-transform-csv:
