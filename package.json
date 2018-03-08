@@ -4,7 +4,7 @@
   "description": "library to help create a reports service",
   "main": "cli.js",
   "scripts": {
-    "test": "eslint . && NODE_ENV=test tap --cov test/addReport.test.js"
+    "test": "eslint . && NODE_ENV=test tap --cov test/*.test.js"
   },
   "bin": {
     "reporter": "cli.js"

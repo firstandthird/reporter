@@ -12,7 +12,7 @@ const register = async (server, options) => {
       server.methods.addReport(path.basename(file, '.js'), require(path.join(reportDir, file)));
     });
   }
-  const customSetter = path.join(process.cwd(), 'args.js');
+  const customSetter = path.join(server.settings.app.argsDir, 'args.js');
   if (fs.existsSync(customSetter)) {
     const argsArray = await require(customSetter)();
     server.methods.setArgs.apply(server, argsArray);
