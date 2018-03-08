@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const register = (server, options) => {
+const register = async (server, options) => {
   server.decorate('server', 'reports', {
     args: [],
     methods: {}
@@ -14,7 +14,7 @@ const register = (server, options) => {
   }
   const customSetter = path.join(process.cwd(), 'args.js');
   if (fs.existsSync(customSetter)) {
-    const argsArray = require(customSetter).bind(server)();
+    const argsArray = await require(customSetter)();
     server.methods.setArgs.apply(server, argsArray);
   }
   if (options.recurringReports) {

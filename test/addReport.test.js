@@ -214,9 +214,9 @@ tap.test('set args with args.js if it is present', async (t) => {
     }
   });
   await rapptor.start();
-  rapptor.server.methods.addReport('test', (request, server) => ({ value: server.info.host }));
+  rapptor.server.methods.addReport('test', (request, db, oldState) => ({ newValue: db.find(), oldValue: oldState.exampleValue }));
   const { result } = await rapptor.server.inject({ url: '/test' });
-  t.match(result, { value: rapptor.server.info.host }, 'returns the arguments specified in CWD/args.js');
+  t.match(result, { newValue: 'my database', oldValue: 5 }, 'returns the arguments specified in CWD/args.js');
   await rapptor.stop();
   t.end();
 });
