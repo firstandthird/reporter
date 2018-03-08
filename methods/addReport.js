@@ -11,7 +11,7 @@ module.exports = {
       // hapi's default generateKey method can't handle the request object parameter
       // so if one is not provided it must be overridden
       if (!fn.options.generateKey) {
-        fn.options.generateKey = (request, ...args) => args.join(',');
+        fn.options.generateKey = (request, ...args) => `${name}-${JSON.stringify(request.query)}`;
       }
     }
     if (fn.options) {
