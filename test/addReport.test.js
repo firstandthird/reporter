@@ -1,7 +1,7 @@
 const Rapptor = require('rapptor');
 const tap = require('tap');
 const os = require('os');
-/*
+
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -190,7 +190,6 @@ tap.test('can specify reports to re-run at regular intervals', async(t) => {
   await rapptor.stop();
   t.end();
 });
-*/
 
 tap.test('set args with args.js if it is present', async (t) => {
   const rapptor = new Rapptor({
