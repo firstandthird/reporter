@@ -8,6 +8,11 @@ module.exports = {
     if (fn.options && typeof fn.options.cache === 'function') {
       fn.options = fn.options || {};
       fn.options.cache = fn.options.cache(this, this.settings.app);
+      // hapi's default generateKey method can't handle the request object parameter
+      // so if one is not provided it must be overridden
+      if (!fn.options.generateKey) {
+        fn.options.generateKey = (request, ...args) => args.join(',');
+      }
     }
     if (fn.options) {
       fn.options.bind = this;
