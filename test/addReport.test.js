@@ -42,6 +42,21 @@ tap.test('addReport exposes route', async (t) => {
   t.end();
 });
 
+tap.test('first param for reports is the incoming request', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.addReport('test', (request) => request.query);
+  const { payload } = await rapptor.server.inject({ url: '/test?status=ok' });
+  t.equals(payload, JSON.stringify({ status: 'ok' }));
+  await rapptor.stop();
+  t.end();
+});
+
 tap.test('set args', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -51,7 +66,7 @@ tap.test('set args', async (t) => {
   });
   await rapptor.start();
   rapptor.server.methods.setArgs({ arg1: true }, { arg2: true });
-  rapptor.server.methods.addReport('test', (arg1, arg2) => ({ arg1, arg2 }));
+  rapptor.server.methods.addReport('test', (request, arg1, arg2) => ({ arg1, arg2 }));
   const { payload } = await rapptor.server.inject({ url: '/test' });
   t.equals(payload, JSON.stringify({ arg1: { arg1: true }, arg2: { arg2: true } }));
   await rapptor.stop();
