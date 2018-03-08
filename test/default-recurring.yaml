@@ -1,3 +1,4 @@
+argsDir: '{{CWD}}'
 plugins:
   hapi-method-scheduler:
     schedule: []
