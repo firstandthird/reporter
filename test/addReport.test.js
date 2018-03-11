@@ -205,3 +205,18 @@ tap.test('can specify reports to re-run at regular intervals', async(t) => {
   await rapptor.stop();
   t.end();
 });
+
+tap.test('set args with args.js if it is present', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.addReport('test', (request, db, oldState) => ({ newValue: db.find(), oldValue: oldState.exampleValue }));
+  const { result } = await rapptor.server.inject({ url: '/test' });
+  t.match(result, { newValue: 'my database', oldValue: 5 }, 'returns the arguments specified in CWD/args.js');
+  await rapptor.stop();
+  t.end();
+});

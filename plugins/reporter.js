@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const register = (server, options) => {
+const register = async (server, options) => {
   server.decorate('server', 'reports', {
     args: [],
     methods: {}
@@ -11,6 +11,11 @@ const register = (server, options) => {
     fs.readdirSync(reportDir).forEach(file => {
       server.methods.addReport(path.basename(file, '.js'), require(path.join(reportDir, file)));
     });
+  }
+  const customSetter = path.join(server.settings.app.argsDir, 'args.js');
+  if (fs.existsSync(customSetter)) {
+    const argsArray = await require(customSetter)();
+    server.methods.setArgs.apply(server, argsArray);
   }
   if (options.recurringReports) {
     options.recurringReports.forEach(recurringReport => {
