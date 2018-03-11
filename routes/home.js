@@ -12,10 +12,11 @@ exports.home = {
   handler(request, h) {
     const server = request.server;
     const { name } = request.params;
+
     const fn = server.methods.reports[name];
     if (!fn) {
       throw Boom.notFound();
     }
-    return fn(...server.reports.args);
+    return fn(request, ...server.reports.args);
   }
 };
