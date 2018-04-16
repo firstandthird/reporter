@@ -1,7 +1,7 @@
 const Rapptor = require('rapptor');
 const tap = require('tap');
 const os = require('os');
-
+/*
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -217,6 +217,30 @@ tap.test('set args with args.js if it is present', async (t) => {
   rapptor.server.methods.addReport('test', (request, db, oldState) => ({ newValue: db.find(), oldValue: oldState.exampleValue }));
   const { result } = await rapptor.server.inject({ url: '/test' });
   t.match(result, { newValue: 'my database', oldValue: 5 }, 'returns the arguments specified in CWD/args.js');
+  await rapptor.stop();
+  t.end();
+});
+*/
+
+tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => {
+  process.env.AUTH_PASSWORD = 'password';
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.route({
+    path: '/test',
+    method: 'get',
+    handler(request, h) {
+      console.log('called');
+      return 'theResult';
+    }
+  });
+  const response = await rapptor.server.inject('/test');
+  t.equal(response.statusCode, 401);
   await rapptor.stop();
   t.end();
 });
