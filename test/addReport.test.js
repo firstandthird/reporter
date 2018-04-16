@@ -1,7 +1,7 @@
 const Rapptor = require('rapptor');
 const tap = require('tap');
 const os = require('os');
-/*
+
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -220,10 +220,11 @@ tap.test('set args with args.js if it is present', async (t) => {
   await rapptor.stop();
   t.end();
 });
-*/
+
 
 tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => {
   process.env.AUTH_PASSWORD = 'password';
+  process.env.AUTH_SALT = 'salt';
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
     context: {
@@ -235,12 +236,12 @@ tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => 
     path: '/test',
     method: 'get',
     handler(request, h) {
-      console.log('called');
       return 'theResult';
     }
   });
   const response = await rapptor.server.inject('/test');
-  t.equal(response.statusCode, 401);
+  t.equal(response.statusCode, 302);
+  t.equal(response.headers.location, '/login?next=/test');
   await rapptor.stop();
   t.end();
 });
