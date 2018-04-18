@@ -220,3 +220,38 @@ tap.test('set args with args.js if it is present', async (t) => {
   await rapptor.stop();
   t.end();
 });
+
+tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => {
+  process.env.AUTH_PASSWORD = 'password';
+  process.env.AUTH_SALT = 'salt';
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.route({
+    path: '/test',
+    method: 'get',
+    handler(request, h) {
+      return 'theResult';
+    }
+  });
+  const response = await rapptor.server.inject('/test');
+  t.equal(response.statusCode, 302);
+  t.equal(response.headers.location, '/login?next=/test');
+  const login = await rapptor.server.inject({
+    url: '/login',
+    method: 'POST',
+    payload: {
+      name: 'somename',
+      password: 'password',
+      next: '/test'
+    }
+  });
+  t.ok(login.headers['set-cookie']);
+  t.equal(login.headers.location, '/test');
+  await rapptor.stop();
+  t.end();
+});

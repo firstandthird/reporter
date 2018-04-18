@@ -1,6 +1,10 @@
 argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
+  hapi-password:
+    _enabled: '{{envExists("AUTH_PASSWORD")}}'
+    password: '{{getEnv("AUTH_PASSWORD", false)}}'
+    salt: '{{getEnv("AUTH_SALT", false)}}'
   hapi-method-scheduler:
     schedule: []
   hapi-method-loader:
