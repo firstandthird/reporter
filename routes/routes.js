@@ -13,6 +13,6 @@ exports.routes = {
         json: `${root}.json`
       };
     });
-    return links;
+    return h.response(links).type('application/json');
   }
 };

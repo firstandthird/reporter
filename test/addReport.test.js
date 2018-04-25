@@ -267,9 +267,23 @@ tap.test('/reports will return a list of reports', async (t) => {
   rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
-  const { payload } = await rapptor.server.inject({ url: '/reports' });
-  t.match(payload, {
-    csv: `${rapptor.server.info.uri}/csv`
+  const response = await rapptor.server.inject({ url: '/reports' });
+  t.match(response.result, {
+    ctest: {
+      csv: `${rapptor.server.info.uri}/ctest.csv`,
+      html: `${rapptor.server.info.uri}/ctest.html`,
+      json: `${rapptor.server.info.uri}/ctest.json`
+    },
+    btest: {
+      csv: `${rapptor.server.info.uri}/btest.csv`,
+      html: `${rapptor.server.info.uri}/btest.html`,
+      json: `${rapptor.server.info.uri}/btest.json`
+    },
+    atest: {
+      csv: `${rapptor.server.info.uri}/atest.csv`,
+      html: `${rapptor.server.info.uri}/atest.html`,
+      json: `${rapptor.server.info.uri}/atest.json`
+    },
   });
   await rapptor.stop();
   t.end();
