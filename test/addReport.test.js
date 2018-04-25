@@ -256,7 +256,7 @@ tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => 
   t.end();
 });
 
-tap.test('/reports will return a list of reports', async (t) => {
+tap.test('/reports will return a list of reports in json/html etc', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
     context: {
@@ -268,23 +268,28 @@ tap.test('/reports will return a list of reports', async (t) => {
   rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
   const response = await rapptor.server.inject({ url: '/reports' });
-  t.match(response.result, {
-    ctest: {
-      csv: `${rapptor.server.info.uri}/ctest.csv`,
-      html: `${rapptor.server.info.uri}/ctest.html`,
-      json: `${rapptor.server.info.uri}/ctest.json`
-    },
-    btest: {
-      csv: `${rapptor.server.info.uri}/btest.csv`,
-      html: `${rapptor.server.info.uri}/btest.html`,
-      json: `${rapptor.server.info.uri}/btest.json`
-    },
-    atest: {
-      csv: `${rapptor.server.info.uri}/atest.csv`,
-      html: `${rapptor.server.info.uri}/atest.html`,
-      json: `${rapptor.server.info.uri}/atest.json`
-    },
-  });
+  t.match(response.result, [{
+    csv: `${rapptor.server.info.uri}/ctest.csv`,
+    html: `${rapptor.server.info.uri}/ctest.html`,
+    json: `${rapptor.server.info.uri}/ctest.json`
+  },
+  {
+    csv: `${rapptor.server.info.uri}/atest.csv`,
+    html: `${rapptor.server.info.uri}/atest.html`,
+    json: `${rapptor.server.info.uri}/atest.json`
+  },
+  {
+    csv: `${rapptor.server.info.uri}/btest.csv`,
+    html: `${rapptor.server.info.uri}/btest.html`,
+    json: `${rapptor.server.info.uri}/btest.json`
+  }]);
+  const response2 = await rapptor.server.inject({ url: '/reports.html' });
+  t.match(response2.result, `<table>
+<tr><th>csv</th><th>html</th><th>json</th></tr>
+<tr><td>http://LAPTOP-SN8RHTA3:8080/ctest.csv</td><td>http://LAPTOP-SN8RHTA3:8080/ctest.html</td><td>http://LAPTOP-SN8RHTA3:8080/ctest.json</td></tr>
+<tr><td>http://LAPTOP-SN8RHTA3:8080/atest.csv</td><td>http://LAPTOP-SN8RHTA3:8080/atest.html</td><td>http://LAPTOP-SN8RHTA3:8080/atest.json</td></tr>
+<tr><td>http://LAPTOP-SN8RHTA3:8080/btest.csv</td><td>http://LAPTOP-SN8RHTA3:8080/btest.html</td><td>http://LAPTOP-SN8RHTA3:8080/btest.json</td></tr>
+</table>`);
   await rapptor.stop();
   t.end();
 });

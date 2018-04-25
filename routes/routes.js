@@ -2,17 +2,22 @@
 exports.routes = {
   method: 'GET',
   path: '/reports',
+  config: {
+    plugins: {
+      'hapi-transform-table': {}
+    }
+  },
   handler(request, h) {
     const server = request.server;
-    const links = {};
+    const links = [];
     Object.keys(server.methods.reports).forEach(key => {
       const root = `${server.info.uri}/${key}`;
-      links[key] = {
+      links.push({
         csv: `${root}.csv`,
         html: `${root}.html`,
         json: `${root}.json`
-      };
+      });
     });
-    return h.response(links).type('application/json');
+    return h.response(links);
   }
 };
