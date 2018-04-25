@@ -256,7 +256,7 @@ tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => 
   t.end();
 });
 
-tap.test('/routes will return a list of reports', async (t) => {
+tap.test('/reports will return a list of reports', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
     context: {
