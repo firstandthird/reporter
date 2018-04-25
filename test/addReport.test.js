@@ -255,3 +255,22 @@ tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => 
   await rapptor.stop();
   t.end();
 });
+
+tap.test('/routes will return a list of reports', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
+  const { payload } = await rapptor.server.inject({ url: '/reports' });
+  t.match(payload, {
+    csv: `${rapptor.server.info.uri}/csv`
+  });
+  await rapptor.stop();
+  t.end();
+});
