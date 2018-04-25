@@ -286,9 +286,9 @@ tap.test('/reports will return a list of reports in json/html etc', async (t) =>
   const response2 = await rapptor.server.inject({ url: '/reports.html' });
   t.match(response2.result, `<table>
 <tr><th>csv</th><th>html</th><th>json</th></tr>
-<tr><td>http://LAPTOP-SN8RHTA3:8080/ctest.csv</td><td>http://LAPTOP-SN8RHTA3:8080/ctest.html</td><td>http://LAPTOP-SN8RHTA3:8080/ctest.json</td></tr>
-<tr><td>http://LAPTOP-SN8RHTA3:8080/atest.csv</td><td>http://LAPTOP-SN8RHTA3:8080/atest.html</td><td>http://LAPTOP-SN8RHTA3:8080/atest.json</td></tr>
-<tr><td>http://LAPTOP-SN8RHTA3:8080/btest.csv</td><td>http://LAPTOP-SN8RHTA3:8080/btest.html</td><td>http://LAPTOP-SN8RHTA3:8080/btest.json</td></tr>
+<tr><td>${server.info.uri}:8080/ctest.csv</td><td>${server.info.uri}:8080/ctest.html</td><td>${server.info.uri}:8080/ctest.json</td></tr>
+<tr><td>${server.info.uri}:8080/atest.csv</td><td>${server.info.uri}:8080/atest.html</td><td>${server.info.uri}:8080/atest.json</td></tr>
+<tr><td>${server.info.uri}:8080/btest.csv</td><td>${server.info.uri}:8080/btest.html</td><td>${server.info.uri}:8080/btest.json</td></tr>
 </table>`);
   await rapptor.stop();
   t.end();
