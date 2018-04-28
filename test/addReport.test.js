@@ -2,6 +2,8 @@ const Rapptor = require('rapptor');
 const tap = require('tap');
 const os = require('os');
 
+process.env.AUTH_PASSWORD = 'password';
+
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -36,7 +38,7 @@ tap.test('addReport exposes route', async (t) => {
   });
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
-  const { payload } = await rapptor.server.inject({ url: '/test' });
+  const { payload } = await rapptor.server.inject({ url: '/test', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equals(payload, JSON.stringify({ status: 'ok' }));
   await rapptor.stop();
   t.end();
@@ -51,7 +53,7 @@ tap.test('first param for reports is the incoming request', async (t) => {
   });
   await rapptor.start();
   rapptor.server.methods.addReport('test', (request) => request.query);
-  const { payload } = await rapptor.server.inject({ url: '/test?status=ok' });
+  const { payload } = await rapptor.server.inject({ url: '/test?status=ok', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equals(payload, JSON.stringify({ status: 'ok' }));
   await rapptor.stop();
   t.end();
@@ -67,7 +69,7 @@ tap.test('set args', async (t) => {
   await rapptor.start();
   rapptor.server.methods.setArgs({ arg1: true }, { arg2: true });
   rapptor.server.methods.addReport('test', (request, arg1, arg2) => ({ arg1, arg2 }));
-  const { payload } = await rapptor.server.inject({ url: '/test' });
+  const { payload } = await rapptor.server.inject({ url: '/test', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equals(payload, JSON.stringify({ arg1: { arg1: true }, arg2: { arg2: true } }));
   await rapptor.stop();
   t.end();
@@ -82,7 +84,7 @@ tap.test('addReport csv', async (t) => {
   });
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
-  const { payload } = await rapptor.server.inject({ url: '/test.csv' });
+  const { payload } = await rapptor.server.inject({ url: '/test.csv', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equals(payload, `"status"${os.EOL}"ok"`);
   await rapptor.stop();
   t.end();
@@ -97,7 +99,7 @@ tap.test('addReport html', async (t) => {
   });
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
-  const { payload } = await rapptor.server.inject({ url: '/test.html' });
+  const { payload } = await rapptor.server.inject({ url: '/test.html', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equals(payload, `<table>${os.EOL}<tr><th>status</th></tr>${os.EOL}<tr><td>ok</td></tr>${os.EOL}</table>`);
   await rapptor.stop();
   t.end();
@@ -130,13 +132,13 @@ tap.test('reports can have caching', async (t) => {
   };
   rapptor.server.methods.addReport('test', testMethod);
   t.equal(cacheSetup, true, 'calls options.cache to set up server cache');
-  const response1 = await rapptor.server.inject({ method: 'get', url: '/test.csv' });
-  const response2 = await rapptor.server.inject({ method: 'get', url: '/test.csv' });
+  const response1 = await rapptor.server.inject({ method: 'get', url: '/test.csv', credentials: { password: process.env.AUTH_PASSWORD } });
+  const response2 = await rapptor.server.inject({ method: 'get', url: '/test.csv', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equal(count, 1, 'only calls the method once');
   t.equal(response1.payload, response2.payload, 'caches results from previous call');
   const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   await wait(2000);
-  const response3 = await rapptor.server.inject({ method: 'get', url: '/test.csv' });
+  const response3 = await rapptor.server.inject({ method: 'get', url: '/test.csv', credentials: { password: process.env.AUTH_PASSWORD } });
   t.notEqual(response1.payload, response3.payload, 'refreshes cache after expiresIn has elapsed');
   t.equal(count, 2, 'refreshes cache after expiresIn has elapsed');
   await rapptor.stop();
@@ -151,7 +153,7 @@ tap.test('auto-load reports from file', async (t) => {
     }
   });
   await rapptor.start();
-  const { payload } = await rapptor.server.inject({ url: '/testreport.csv' });
+  const { payload } = await rapptor.server.inject({ url: '/testreport.csv', credentials: { password: process.env.AUTH_PASSWORD } });
   t.equals(payload, `"status"${os.EOL}"ok"`);
   await rapptor.stop();
   t.end();
@@ -215,13 +217,13 @@ tap.test('set args with args.js if it is present', async (t) => {
   });
   await rapptor.start();
   rapptor.server.methods.addReport('test', (request, db, oldState) => ({ newValue: db.find(), oldValue: oldState.exampleValue }));
-  const { result } = await rapptor.server.inject({ url: '/test' });
+  const { result } = await rapptor.server.inject({ url: '/test', credentials: { password: process.env.AUTH_PASSWORD } });
   t.match(result, { newValue: 'my database', oldValue: 5 }, 'returns the arguments specified in CWD/args.js');
   await rapptor.stop();
   t.end();
 });
 
-tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => {
+tap.test('supports login etc via hapi-password', async (t) => {
   process.env.AUTH_PASSWORD = 'password';
   process.env.AUTH_SALT = 'salt';
   const rapptor = new Rapptor({
