@@ -2,15 +2,16 @@ argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
   hapi-password:
-    _enabled: '{{envExists("AUTH_PASSWORD")}}'
-    password: '{{getEnv("AUTH_PASSWORD", false)}}'
-    salt: '{{getEnv("AUTH_SALT", false)}}'
+    password: '{{getEnv("AUTH_PASSWORD")}}'
+    salt: '{{getEnv("AUTH_SALT")}}'
   hapi-method-scheduler:
     schedule: []
   hapi-method-loader:
     path: '{{LIBDIR}}/methods'
   hapi-route-loader:
     path: '{{LIBDIR}}/routes'
+    _dependencies:
+      'hapi-password'
   '{{LIBDIR}}/plugins/reporter.js':
     _dependencies:
       - 'hapi-method-scheduler'

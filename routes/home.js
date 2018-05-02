@@ -4,6 +4,7 @@ exports.home = {
   method: 'GET',
   path: '/{name}',
   config: {
+    auth: 'password',
     plugins: {
       'hapi-transform-csv': {},
       'hapi-transform-table': {}
