@@ -4,6 +4,7 @@ plugins:
   hapi-password:
     password: '{{getEnv("AUTH_PASSWORD")}}'
     salt: '{{getEnv("AUTH_SALT")}}'
+    isSecure: '{{getEnv("IS_SECURE", false)}}'
   hapi-method-scheduler:
     schedule: []
   hapi-method-loader:
