@@ -256,7 +256,7 @@ tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => 
   t.end();
 });
 
-tap.test('/reports will return a list of reports in json/html etc', async (t) => {
+tap.test('/ will return a list of reports in json/html etc', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
     context: {
@@ -267,7 +267,7 @@ tap.test('/reports will return a list of reports in json/html etc', async (t) =>
   rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
-  const response = await rapptor.server.inject({ url: '/reports' });
+  const response = await rapptor.server.inject({ url: '/' });
   t.match(response.result, [{
     csv: `${rapptor.server.info.uri}/ctest.csv`,
     html: `${rapptor.server.info.uri}/ctest.html`,
@@ -283,12 +283,13 @@ tap.test('/reports will return a list of reports in json/html etc', async (t) =>
     html: `${rapptor.server.info.uri}/btest.html`,
     json: `${rapptor.server.info.uri}/btest.json`
   }]);
-  const response2 = await rapptor.server.inject({ url: '/reports.html' });
+  const response2 = await rapptor.server.inject({ url: '/.html' });
+  const server = rapptor.server;
   t.match(response2.result, `<table>
 <tr><th>csv</th><th>html</th><th>json</th></tr>
-<tr><td>${server.info.uri}:8080/ctest.csv</td><td>${server.info.uri}:8080/ctest.html</td><td>${server.info.uri}:8080/ctest.json</td></tr>
-<tr><td>${server.info.uri}:8080/atest.csv</td><td>${server.info.uri}:8080/atest.html</td><td>${server.info.uri}:8080/atest.json</td></tr>
-<tr><td>${server.info.uri}:8080/btest.csv</td><td>${server.info.uri}:8080/btest.html</td><td>${server.info.uri}:8080/btest.json</td></tr>
+<tr><td>${server.info.uri}/ctest.csv</td><td>${server.info.uri}/ctest.html</td><td>${server.info.uri}/ctest.json</td></tr>
+<tr><td>${server.info.uri}/atest.csv</td><td>${server.info.uri}/atest.html</td><td>${server.info.uri}/atest.json</td></tr>
+<tr><td>${server.info.uri}/btest.csv</td><td>${server.info.uri}/btest.html</td><td>${server.info.uri}/btest.json</td></tr>
 </table>`);
   await rapptor.stop();
   t.end();
