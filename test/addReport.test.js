@@ -216,7 +216,50 @@ tap.test('set args with args.js if it is present', async (t) => {
   await rapptor.start();
   rapptor.server.methods.addReport('test', (request, db, oldState) => ({ newValue: db.find(), oldValue: oldState.exampleValue }));
   const { result } = await rapptor.server.inject({ url: '/test' });
+  console.log(result.statusCode);
   t.match(result, { newValue: 'my database', oldValue: 5 }, 'returns the arguments specified in CWD/args.js');
+  await rapptor.stop();
+  t.end();
+});
+
+tap.test('/ will return a list of reports in json/html etc', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
+  const response = await rapptor.server.inject({ url: '/' });
+  t.match(response.result, [{
+    name: 'ctest',
+    csv: `${rapptor.server.info.uri}/ctest.csv`,
+    html: `${rapptor.server.info.uri}/ctest.html`,
+    json: `${rapptor.server.info.uri}/ctest.json`
+  },
+  {
+    name: 'atest',
+    csv: `${rapptor.server.info.uri}/atest.csv`,
+    html: `${rapptor.server.info.uri}/atest.html`,
+    json: `${rapptor.server.info.uri}/atest.json`
+  },
+  {
+    name: 'btest',
+    csv: `${rapptor.server.info.uri}/btest.csv`,
+    html: `${rapptor.server.info.uri}/btest.html`,
+    json: `${rapptor.server.info.uri}/btest.json`
+  }]);
+  const response2 = await rapptor.server.inject({ url: '/.html' });
+  const server = rapptor.server;
+  t.match(response2.result, `<table>
+<tr><th>name</th><th>csv</th><th>html</th><th>json</th></tr>
+<tr><td>ctest</td><td>${server.info.uri}/ctest.csv</td><td>${server.info.uri}/ctest.html</td><td>${server.info.uri}/ctest.json</td></tr>
+<tr><td>atest</td><td>${server.info.uri}/atest.csv</td><td>${server.info.uri}/atest.html</td><td>${server.info.uri}/atest.json</td></tr>
+<tr><td>btest</td><td>${server.info.uri}/btest.csv</td><td>${server.info.uri}/btest.html</td><td>${server.info.uri}/btest.json</td></tr>
+</table>`);
   await rapptor.stop();
   t.end();
 });
@@ -252,45 +295,6 @@ tap.test('AUTH_PASSWORD will use hapi-password to protect routes', async (t) => 
   });
   t.ok(login.headers['set-cookie']);
   t.equal(login.headers.location, '/test');
-  await rapptor.stop();
-  t.end();
-});
-
-tap.test('/ will return a list of reports in json/html etc', async (t) => {
-  const rapptor = new Rapptor({
-    configPrefix: 'reporter',
-    context: {
-      LIBDIR: process.cwd()
-    }
-  });
-  await rapptor.start();
-  rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
-  rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
-  rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
-  const response = await rapptor.server.inject({ url: '/' });
-  t.match(response.result, [{
-    csv: `${rapptor.server.info.uri}/ctest.csv`,
-    html: `${rapptor.server.info.uri}/ctest.html`,
-    json: `${rapptor.server.info.uri}/ctest.json`
-  },
-  {
-    csv: `${rapptor.server.info.uri}/atest.csv`,
-    html: `${rapptor.server.info.uri}/atest.html`,
-    json: `${rapptor.server.info.uri}/atest.json`
-  },
-  {
-    csv: `${rapptor.server.info.uri}/btest.csv`,
-    html: `${rapptor.server.info.uri}/btest.html`,
-    json: `${rapptor.server.info.uri}/btest.json`
-  }]);
-  const response2 = await rapptor.server.inject({ url: '/.html' });
-  const server = rapptor.server;
-  t.match(response2.result, `<table>
-<tr><th>csv</th><th>html</th><th>json</th></tr>
-<tr><td>${server.info.uri}/ctest.csv</td><td>${server.info.uri}/ctest.html</td><td>${server.info.uri}/ctest.json</td></tr>
-<tr><td>${server.info.uri}/atest.csv</td><td>${server.info.uri}/atest.html</td><td>${server.info.uri}/atest.json</td></tr>
-<tr><td>${server.info.uri}/btest.csv</td><td>${server.info.uri}/btest.html</td><td>${server.info.uri}/btest.json</td></tr>
-</table>`);
   await rapptor.stop();
   t.end();
 });
