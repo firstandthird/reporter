@@ -38,7 +38,7 @@
     "hapi-method-scheduler": "^4.0.0",
     "hapi-password": "^5.1.0",
     "hapi-transform-csv": "^1.0.2",
-    "hapi-transform-table": "^1.2.0",
+    "hapi-transform-table": "^1.5.0",
     "rapptor": "^5.10.1",
     "s3put": "^4.0.0"
   }
