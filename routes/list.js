@@ -12,7 +12,6 @@ exports.routes = {
     let base = server.settings.app.routePrefix ?
       `${request.info.host}/${server.settings.app.routePrefix}`
       : `${request.info.host}`;
-    base = request.url.host === 'https' ? `https://${base}` : `http://${base}`;
     const links = [];
     Object.keys(server.methods.reports).forEach(key => {
       const root = `${base}/${key}`;
