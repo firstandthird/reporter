@@ -9,9 +9,9 @@ exports.routes = {
   },
   handler(request, h) {
     const server = request.server;
-    let base = server.settings.app.routePrefix ?
-      `${request.info.host}/${server.settings.app.routePrefix}`
-      : `${request.info.host}`;
+    const base = server.settings.app.routePrefix ?
+      `${server.settings.app.routePrefix}`
+      : '';
     const links = [];
     Object.keys(server.methods.reports).forEach(key => {
       const root = `${base}/${key}`;

@@ -235,45 +235,35 @@ tap.test('/ will return a list of reports in json/html etc', async (t) => {
   rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
   const response = await rapptor.server.inject({ url: '/', credentials: { password: process.env.AUTH_PASSWORD } });
+
   t.match(response.result, [{
-    name: 'testrecurring',
-    csv: `${rapptor.server.info.uri}/testrecurring.csv`,
-    html: `${rapptor.server.info.uri}/testrecurring.html`,
-    json: `${rapptor.server.info.uri}/testrecurring.json`
-  },
-  {
-    name: 'testreport',
-    csv: `${rapptor.server.info.uri}/testreport.csv`,
-    html: `${rapptor.server.info.uri}/testreport.html`,
-    json: `${rapptor.server.info.uri}/testreport.json`
-  },
-  {
     name: 'ctest',
-    csv: `${rapptor.server.info.uri}/ctest.csv`,
-    html: `${rapptor.server.info.uri}/ctest.html`,
-    json: `${rapptor.server.info.uri}/ctest.json`
+    csv: '/ctest.csv',
+    html: '/ctest.html',
+    json: '/ctest.json'
   },
   {
     name: 'atest',
-    csv: `${rapptor.server.info.uri}/atest.csv`,
-    html: `${rapptor.server.info.uri}/atest.html`,
-    json: `${rapptor.server.info.uri}/atest.json`
+    csv: '/atest.csv',
+    html: '/atest.html',
+    json: '/atest.json'
   },
   {
     name: 'btest',
-    csv: `${rapptor.server.info.uri}/btest.csv`,
-    html: `${rapptor.server.info.uri}/btest.html`,
-    json: `${rapptor.server.info.uri}/btest.json`
+    csv: '/btest.csv',
+    html: '/btest.html',
+    json: '/btest.json'
   }]);
   const response2 = await rapptor.server.inject({ url: '/.html', credentials: { password: process.env.AUTH_PASSWORD } });
   const server = rapptor.server;
   t.match(response2.result, `<table>
+<thead>
 <tr><th>name</th><th>csv</th><th>html</th><th>json</th></tr>
-<tr><td>testrecurring</td><td>${server.info.uri}/testrecurring.csv</td><td>${server.info.uri}/testrecurring.html</td><td>${server.info.uri}/testrecurring.json</td></tr>
-<tr><td>testreport</td><td>${server.info.uri}/testreport.csv</td><td>${server.info.uri}/testreport.html</td><td>${server.info.uri}/testreport.json</td></tr>
-<tr><td>ctest</td><td>${server.info.uri}/ctest.csv</td><td>${server.info.uri}/ctest.html</td><td>${server.info.uri}/ctest.json</td></tr>
-<tr><td>atest</td><td>${server.info.uri}/atest.csv</td><td>${server.info.uri}/atest.html</td><td>${server.info.uri}/atest.json</td></tr>
-<tr><td>btest</td><td>${server.info.uri}/btest.csv</td><td>${server.info.uri}/btest.html</td><td>${server.info.uri}/btest.json</td></tr>
+</thead>
+<tbody><tr><td>ctest</td><td>/ctest.csv</td><td>/ctest.html</td><td>/ctest.json</td></tr>
+<tr><td>atest</td><td>/atest.csv</td><td>/atest.html</td><td>/atest.json</td></tr>
+<tr><td>btest</td><td>/btest.csv</td><td>/btest.html</td><td>/btest.json</td></tr>
+</tbody>
 </table>`);
   await rapptor.stop();
   t.end();
