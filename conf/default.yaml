@@ -18,5 +18,13 @@ plugins:
       - 'hapi-method-scheduler'
       - 'hapi-method-loader'
   '{{LIBDIR}}/plugins/aws.js':
+  '{{LIBDIR}}/plugins/email.js':
+    _dependencies:
+      - 'hapi-method-scheduler'
+      - 'hapi-method-loader'
+    host: '{{getEnv("SMTP_HOST", "")}}'
+    port: '{{getEnv("SMTP_PORT", "")}}'
+    user: '{{getEnv("SMTP_USER", "")}}'
+    password: '{{getEnv("SMTP_PASS", "")}}'
   hapi-transform-table:
   hapi-transform-csv:

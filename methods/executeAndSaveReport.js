@@ -1,5 +1,7 @@
 module.exports = {
-  async method(filename, noS3) {
+  async method(filename, noS3, emails) {
+    console.log('executeAndSaveReport');
+    console.log('executeAndSaveReport');
     // default extension to csv:
     if (filename.split('.').length === 1) {
       filename = `${filename}.csv`;
@@ -16,6 +18,10 @@ module.exports = {
     if (noS3) {
       return response.result;
     }
-    return this.uploadToS3(filename, response.result);
+    const result = this.uploadToS3(filename, response.result);
+    if (emails) {
+      this.email(filename, response.result, result, emails);
+    }
+    return result;
   }
 };
