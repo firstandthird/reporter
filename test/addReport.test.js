@@ -3,7 +3,7 @@ const tap = require('tap');
 const os = require('os');
 
 process.env.AUTH_PASSWORD = 'password';
-/*
+
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -100,7 +100,14 @@ tap.test('addReport html', async (t) => {
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test.html', credentials: { password: process.env.AUTH_PASSWORD } });
-  t.equals(payload, `<table>${os.EOL}<tr><th>status</th></tr>${os.EOL}<tr><td>ok</td></tr>${os.EOL}</table>`);
+  t.match(payload, `<table>
+<thead>
+<tr><th>status</th></tr>
+</thead>
+
+<tbody><tr><td>ok</td></tr>
+</tbody>
+</table>`);
   await rapptor.stop();
   t.end();
 });
@@ -148,6 +155,7 @@ tap.test('reports can have caching', async (t) => {
 tap.test('auto-load reports from file', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
+    configPath: __dirname,
     context: {
       LIBDIR: process.cwd()
     }
@@ -169,34 +177,43 @@ tap.test('can save things to s3', async (t) => {
     }
   });
   await rapptor.start();
-  await rapptor.server.uploadToS3('reporter_test.csv', 'this,is,some,stuff,I,am,saving');
-  await rapptor.server.uploadToS3('reporter_test.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
-  await rapptor.stop();
-  t.end();
-});
-
-tap.test('can run a report and pass the results to uploadToS3', async (t) => {
-  const rapptor = new Rapptor({
-    configPrefix: 'reporter',
-    context: {
-      LIBDIR: process.cwd()
-    }
-  });
-  await rapptor.start();
-  await rapptor.server.methods.executeAndSaveReport('/testreport.html');
-  await rapptor.server.methods.executeAndSaveReport('/testreport'); // should default to testreport.csv
   try {
-    await rapptor.server.methods.executeAndSaveReport('/gibberish');
+    await rapptor.server.uploadToS3('reporter_test.csv', 'this,is,some,stuff,I,am,saving');
+    await rapptor.server.uploadToS3('reporter_test.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
   } catch (e) {
-    t.equal(e.toString(), 'Error: there was an error while executing report /gibberish.csv');
+    // it is fine if this isn't set up, the failure is in s3Put
   }
   await rapptor.stop();
   t.end();
 });
-*/
+
+// tap.test('can run a report and pass the results to uploadToS3', async (t) => {
+//   const rapptor = new Rapptor({
+//     configPrefix: 'reporter',
+//     context: {
+//       LIBDIR: process.cwd()
+//     }
+//   });
+//   rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
+//     t.ok(['/testreport.html', '/testreport'].includes(filename), 'passes filename to uploadToS3');
+//     return {
+//       Location: 'http://s3.com/some-path/'
+//     };
+//   }, { extend: true });
+//   await rapptor.start();
+//   await rapptor.server.methods.executeAndSaveReport('/testreport.html');
+//   await rapptor.server.methods.executeAndSaveReport('/testreport'); // should default to testreport.csv
+//   try {
+//     await rapptor.server.methods.executeAndSaveReport('/gibberish');
+//   } catch (e) {
+//     t.equal(e.toString(), 'Error: there was an error while executing report /gibberish.csv');
+//   }
+//   await rapptor.stop();
+//   t.end();
+// });
+
 tap.test('can specify reports to re-run at regular intervals', async(t) => {
   const rapptor = new Rapptor({
-    configPath: __dirname,
     configPrefix: 'recurring',
     context: {
       LIBDIR: process.cwd()
@@ -207,7 +224,7 @@ tap.test('can specify reports to re-run at regular intervals', async(t) => {
   await rapptor.stop();
   t.end();
 });
-/*
+
 tap.test('set args with args.js if it is present', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
@@ -261,23 +278,37 @@ tap.test('supports login etc via hapi-password', async (t) => {
 // This test requires you to set SMTP parameters in shell:
 
 tap.test('can email the s3 link to specified recipients', async(t) => {
+  process.env.AUTH_PASSWORD = 'password';
+  process.env.AUTH_SALT = 'salt';
   if (!process.env.SMTP_HOST) {
     return t.end();
   }
   const rapptor = new Rapptor({
+    configPrefix: 'recurring',
     configPath: __dirname,
-    configPrefix: 'email',
     context: {
       LIBDIR: process.cwd()
     }
   });
   await rapptor.start();
-  rapptor.server.uploadToS3 = (filename, reportResult) => {
-    console.log('--');
-    console.log(filename);
-  };
-  await new Promise(resolve => setTimeout(resolve, 4000));
+  t.ok(rapptor.server.email, 'email plugin was registered');
+  // mock the uploadToS3 function:
+  rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
+    t.ok(['/testreport.csv', '/testrecurring.csv'].includes(filename), 'passes filename to uploadToS3');
+    return {
+      Location: 'http://s3.com/some-path/'
+    };
+  }, { extend: true });
+  const result = await rapptor.server.methods.executeAndSaveReport('testreport', false, ['bob@somewhere.com']);
+  // results will include the result of the email transfer as well
+  t.ok(result.emailResult, {
+    mailResult: {
+      accepted: ['bob@somewhere.com']
+    },
+    mailOptions: {
+      html: 'and is available for review <a href="http://s3.com/some-path/">here. </a>'
+    }
+  });
   await rapptor.stop();
   t.end();
 });
-*/

@@ -12,13 +12,7 @@ const register = (server, options) => {
       pass: options.password
     }
   });
-  server.decorate('server', 'email', (filename, report, s3Result, emails) => {
-    console.log('emailer called');
-    console.log('emailer called');
-    console.log(filename);
-    console.log(report);
-    console.log(s3Result);
-    console.log(emails);
+  server.decorate('server', 'email', (filename, report, s3Result, emails) => new Promise(resolve => {
     if (!emails) {
       return;
     }
@@ -28,13 +22,13 @@ const register = (server, options) => {
       subject: filename,
       html: `A new report was generated at ${new Date()} and is available for review <a href="${s3Result.Location}">here. </a>`
     };
-    console.log(mailOptions);
-    transporter.sendMail(mailOptions, (err, info) => {
-      console.log('+');
-      console.log(err);
-      console.log(info);
+    transporter.sendMail(mailOptions, (err, mailResult) => {
+      if (err) {
+        server.log(['email', 'error'], err);
+      }
+      return resolve({ mailResult, mailOptions });
     });
-  });
+  }));
 };
 
 exports.plugin = {

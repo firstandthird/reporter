@@ -1,5 +1,9 @@
 argsDir: '{{CWD}}'
 plugins:
+  hapi-password:
+    password: '{{getEnv("AUTH_PASSWORD")}}'
+    salt: '{{getEnv("AUTH_SALT")}}'
+    isSecure: '{{getEnv("IS_SECURE", false)}}'
   hapi-method-scheduler:
     schedule: []
   hapi-method-loader:
@@ -8,6 +12,14 @@ plugins:
     path: '{{LIBDIR}}/routes'
     _dependencies:
       - 'hapi-password'
+  '{{LIBDIR}}/plugins/email.js':
+    _dependencies:
+      - 'hapi-method-scheduler'
+      - 'hapi-method-loader'
+    host: '{{getEnv("SMTP_HOST", "")}}'
+    port: '{{getEnv("SMTP_PORT", "")}}'
+    user: '{{getEnv("SMTP_USER", "")}}'
+    password: '{{getEnv("SMTP_PASS", "")}}'
   '{{LIBDIR}}/plugins/reporter.js':
     _dependencies:
       - 'hapi-method-loader'
