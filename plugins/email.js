@@ -1,9 +1,6 @@
 const nodemailer = require('nodemailer');
 
 const register = (server, options) => {
-  if (options.host === '') {
-    return;
-  }
   const transporter = nodemailer.createTransport({
     host: options.host,
     port: options.port,
@@ -16,6 +13,10 @@ const register = (server, options) => {
     if (!emails) {
       return;
     }
+    if (options.host === '') {
+      throw new Error(`SMTP_HOST not set for report ${filename} emails: ${emails.join(',')}`);
+    }
+
     const mailOptions = {
       from: options.from,
       to: emails.join(','),
