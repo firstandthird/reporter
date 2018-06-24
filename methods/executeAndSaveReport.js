@@ -7,6 +7,7 @@ module.exports = {
     if (!filename.startsWith('/')) {
       filename = `/${filename}`;
     }
+    // inject with credentials to bypass hapi-password:
     const response = await this.inject({ method: 'get', url: filename, credentials: { id: 'server' } });
     // don't proceed if there was an error:
     if (response.statusCode !== 200) {

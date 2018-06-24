@@ -155,7 +155,6 @@ tap.test('reports can have caching', async (t) => {
 tap.test('auto-load reports from file', async (t) => {
   const rapptor = new Rapptor({
     configPrefix: 'reporter',
-    configPath: __dirname,
     context: {
       LIBDIR: process.cwd()
     }
@@ -187,30 +186,30 @@ tap.test('can save things to s3', async (t) => {
   t.end();
 });
 
-// tap.test('can run a report and pass the results to uploadToS3', async (t) => {
-//   const rapptor = new Rapptor({
-//     configPrefix: 'reporter',
-//     context: {
-//       LIBDIR: process.cwd()
-//     }
-//   });
-//   rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
-//     t.ok(['/testreport.html', '/testreport'].includes(filename), 'passes filename to uploadToS3');
-//     return {
-//       Location: 'http://s3.com/some-path/'
-//     };
-//   }, { extend: true });
-//   await rapptor.start();
-//   await rapptor.server.methods.executeAndSaveReport('/testreport.html');
-//   await rapptor.server.methods.executeAndSaveReport('/testreport'); // should default to testreport.csv
-//   try {
-//     await rapptor.server.methods.executeAndSaveReport('/gibberish');
-//   } catch (e) {
-//     t.equal(e.toString(), 'Error: there was an error while executing report /gibberish.csv');
-//   }
-//   await rapptor.stop();
-//   t.end();
-// });
+tap.test('can run a report and pass the results to uploadToS3', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
+    t.ok(['/testreport.html', '/testreport.csv'].includes(filename), 'passes filename to uploadToS3');
+    return {
+      Location: 'http://s3.com/some-path/'
+    };
+  }, { extend: true });
+  await rapptor.server.methods.executeAndSaveReport('/testreport.html');
+  await rapptor.server.methods.executeAndSaveReport('/testreport'); // should default to testreport.csv
+  try {
+    await rapptor.server.methods.executeAndSaveReport('/gibberish');
+  } catch (e) {
+    t.equal(e.toString(), 'Error: there was an error while executing report /gibberish.csv');
+  }
+  await rapptor.stop();
+  t.end();
+});
 
 tap.test('can specify reports to re-run at regular intervals', async(t) => {
   const rapptor = new Rapptor({
