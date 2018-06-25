@@ -223,6 +223,64 @@ tap.test('set args with args.js if it is present', async (t) => {
   t.end();
 });
 
+tap.test('/ will return a list of reports in json/html etc', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
+  const response = await rapptor.server.inject({ url: '/', credentials: { password: process.env.AUTH_PASSWORD } });
+
+  t.match(response.result, [{
+    name: 'testrecurring',
+    csv: '/testrecurring.csv',
+    html: '/testrecurring.html',
+    json: '/testrecurring.json'
+  }, {
+    name: 'testreport',
+    csv: '/testreport.csv',
+    html: '/testreport.html',
+    json: '/testreport.json'
+  }, {
+    name: 'ctest',
+    csv: '/ctest.csv',
+    html: '/ctest.html',
+    json: '/ctest.json'
+  },
+  {
+    name: 'atest',
+    csv: '/atest.csv',
+    html: '/atest.html',
+    json: '/atest.json'
+  },
+  {
+    name: 'btest',
+    csv: '/btest.csv',
+    html: '/btest.html',
+    json: '/btest.json'
+  }]);
+  const response2 = await rapptor.server.inject({ url: '/.html', credentials: { password: process.env.AUTH_PASSWORD } });
+  t.match(response2.result, `<table>
+<thead>
+<tr><th>name</th><th>csv</th><th>html</th><th>json</th></tr>
+</thead>
+
+<tbody><tr><td>testrecurring</td><td>/testrecurring.csv</td><td>/testrecurring.html</td><td>/testrecurring.json</td></tr>
+<tr><td>testreport</td><td>/testreport.csv</td><td>/testreport.html</td><td>/testreport.json</td></tr>
+<tr><td>ctest</td><td>/ctest.csv</td><td>/ctest.html</td><td>/ctest.json</td></tr>
+<tr><td>atest</td><td>/atest.csv</td><td>/atest.html</td><td>/atest.json</td></tr>
+<tr><td>btest</td><td>/btest.csv</td><td>/btest.html</td><td>/btest.json</td></tr>
+</tbody>
+</table>`);
+  await rapptor.stop();
+  t.end();
+});
+
 tap.test('supports login etc via hapi-password', async (t) => {
   process.env.AUTH_PASSWORD = 'password';
   process.env.AUTH_SALT = 'salt';
