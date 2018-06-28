@@ -1,0 +1,10 @@
+envVars:
+  hapiPassword:
+    password: '{{getEnv("AUTH_PASSWORD")}}'
+    salt: '{{getEnv("AUTH_SALT")}}'
+    isSecure: '{{getEnv("IS_SECURE", false)}}'
+  email:
+    host: '{{getEnv("SMTP_HOST", "")}}'
+    port: '{{getEnv("SMTP_PORT", "")}}'
+    user: '{{getEnv("SMTP_USER", "")}}'
+    password: '{{getEnv("SMTP_PASS", "")}}'
