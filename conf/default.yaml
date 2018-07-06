@@ -2,9 +2,9 @@ argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
   hapi-password:
-    password: '{{getEnv("AUTH_PASSWORD")}}'
-    salt: '{{getEnv("AUTH_SALT")}}'
-    isSecure: '{{getEnv("IS_SECURE", false)}}'
+    password: '{{envVars.hapiPassword.password}}'
+    salt: '{{envVars.hapiPassword.salt}}'
+    isSecure: '{{envVars.hapiPassword.isSecure}}'
   hapi-method-scheduler:
     schedule: []
   hapi-method-loader:
@@ -18,5 +18,13 @@ plugins:
       - 'hapi-method-scheduler'
       - 'hapi-method-loader'
   '{{LIBDIR}}/plugins/aws.js':
+  '{{LIBDIR}}/plugins/email.js':
+    _dependencies:
+      - 'hapi-method-scheduler'
+      - 'hapi-method-loader'
+    host: '{{envVars.email.host}}'
+    port: '{{envVars.email.port}}'
+    user: '{{envVars.email.user}}'
+    password: '{{envVars.email.password}}'
   hapi-transform-table:
   hapi-transform-csv:

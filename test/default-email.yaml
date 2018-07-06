@@ -10,16 +10,28 @@ plugins:
     path: '{{LIBDIR}}/methods'
   hapi-route-loader:
     path: '{{LIBDIR}}/routes'
+    _dependencies:
+      - 'hapi-password'
+  '{{LIBDIR}}/plugins/email.js':
+    _dependencies:
+      - 'hapi-method-scheduler'
+      - 'hapi-method-loader'
+    host: '{{getEnv("SMTP_HOST", "")}}'
+    port: '{{getEnv("SMTP_PORT", "")}}'
+    user: '{{getEnv("SMTP_USER", "")}}'
+    password: '{{getEnv("SMTP_PASS", "")}}'
   '{{LIBDIR}}/plugins/reporter.js':
     _dependencies:
       - 'hapi-method-loader'
       - 'hapi-method-scheduler'
+      - '{{LIBDIR}}/plugins/email.js'
     recurringReports:
       -
         name: 'testrecurring'
         interval: '* * * * * *'
         format: 'csv'
         saveToS3: true
+        email: '{{getEnv("REPORTER_TEST_EMAIL", "anywhere@test.com")}}'
   './plugins/aws.js':
   hapi-transform-table:
   hapi-transform-csv:

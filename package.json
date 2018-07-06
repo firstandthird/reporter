@@ -39,6 +39,7 @@
     "hapi-password": "^5.1.0",
     "hapi-transform-csv": "^1.0.5",
     "hapi-transform-table": "^1.5.4",
+    "nodemailer": "^4.6.7",
     "rapptor": "^5.10.1",
     "s3put": "^4.0.0"
   }
