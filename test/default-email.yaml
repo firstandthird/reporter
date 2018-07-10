@@ -31,7 +31,7 @@ plugins:
         interval: '* * * * * *'
         format: 'csv'
         saveToS3: true
-        email: '{{getEnv("REPORTER_TEST_EMAIL", "anywhere@test.com")}}'
+        emails: '{{getEnv("REPORTER_TEST_EMAIL", "anywhere@test.com")}}'
   './plugins/aws.js':
   hapi-transform-table:
   hapi-transform-csv:

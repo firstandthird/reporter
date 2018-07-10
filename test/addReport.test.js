@@ -102,10 +102,10 @@ tap.test('addReport html', async (t) => {
   const { payload } = await rapptor.server.inject({ url: '/test.html', credentials: { password: process.env.AUTH_PASSWORD } });
   t.match(payload, `<table>
 <thead>
-<tr><th>status</th></tr>
+<tr><th>Name</th><th>Value</th></tr>
 </thead>
 
-<tbody><tr><td>ok</td></tr>
+<tbody><tr><td>status</td><td>ok</td></tr>
 </tbody>
 </table>`);
   await rapptor.stop();

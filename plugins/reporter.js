@@ -23,7 +23,7 @@ const register = async (server, options) => {
       server.scheduleMethod(
         recurringReport.interval,
         `executeAndSaveReport('${recurringReport.name}.${recurringReport.format}',
-         ${!recurringReport.saveToS3}, ${recurringReport.emails})`
+         ${!recurringReport.saveToS3}, "${recurringReport.emails}")`
       );
     });
   }
