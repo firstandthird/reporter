@@ -1,4 +1,11 @@
 argsDir: '{{CWD}}'
+recurringReports:
+  -
+    name: 'testrecurring'
+    interval: '* * * * * *'
+    format: 'csv'
+    saveToS3: true
+    emails: '{{getEnv("REPORTER_TEST_EMAIL", "anywhere@test.com")}}'
 plugins:
   hapi-password:
     password: '{{getEnv("AUTH_PASSWORD")}}'
@@ -25,13 +32,6 @@ plugins:
       - 'hapi-method-loader'
       - 'hapi-method-scheduler'
       - '{{LIBDIR}}/plugins/email.js'
-    recurringReports:
-      -
-        name: 'testrecurring'
-        interval: '* * * * * *'
-        format: 'csv'
-        saveToS3: true
-        emails: '{{getEnv("REPORTER_TEST_EMAIL", "anywhere@test.com")}}'
   './plugins/aws.js':
   hapi-transform-table:
   hapi-transform-csv:
