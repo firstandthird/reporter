@@ -17,9 +17,9 @@ module.exports = {
     if (noS3) {
       return response.result;
     }
-    const result = this.uploadToS3(filename, response.result);
+    const result = await this.uploadToS3(filename, response.result);
     if (emails) {
-      result.emailResult = await this.email(filename, response.result, result, emails);
+      result.emailResult = await this.email(filename, response.result, result, [emails]);
     }
     return result;
   }
