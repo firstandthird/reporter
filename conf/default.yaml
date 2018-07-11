@@ -1,3 +1,8 @@
+server:
+  cache:
+    enabled: '{{envExists("REDIS_HOST")}}'
+    engine: 'catbox-redis'
+    partition: '{{getEnv("REDIS_PARTITION", "reporter")}}'
 argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
