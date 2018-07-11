@@ -1,4 +1,8 @@
 envVars:
+  redis:
+    enabled: '{{envExists("REDIS_HOST")}}'
+    host: '{{getEnv("REDIS_HOST", false)}}'
+    partition: '{{getEnv("REDIS_PARTITION", "reporter")}}'
   hapiPassword:
     password: '{{getEnv("AUTH_PASSWORD")}}'
     salt: '{{getEnv("AUTH_SALT")}}'
