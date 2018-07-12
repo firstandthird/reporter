@@ -38,7 +38,7 @@
     "catbox-redis": "^4.1.0",
     "hapi-method-scheduler": "^4.0.0",
     "hapi-password": "^5.1.0",
-    "hapi-transform-csv": "^1.0.5",
+    "hapi-transform-csv": "^1.0.6",
     "hapi-transform-table": "^1.7.1",
     "nodemailer": "^4.6.7",
     "rapptor": "^5.10.1",
