@@ -7,6 +7,7 @@ server:
 argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
+  hapi-robots:
   hapi-password:
     password: '{{envVars.hapiPassword.password}}'
     salt: '{{envVars.hapiPassword.salt}}'
