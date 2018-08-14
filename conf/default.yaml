@@ -8,7 +8,7 @@ argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
   hapi-robots:
-    env: '1l2kjv390j14g9208j09' # disallow everyone even in production env
+    env: 'disallow all robots even in production environment' 
   hapi-password:
     password: '{{envVars.hapiPassword.password}}'
     salt: '{{envVars.hapiPassword.salt}}'
