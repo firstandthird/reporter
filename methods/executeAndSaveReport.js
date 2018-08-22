@@ -8,19 +8,26 @@ module.exports = {
       filename = `/${filename}`;
     }
     // inject with credentials to bypass hapi-password:
-    const response = await this.inject({ method: 'get', url: filename, credentials: { id: 'server' } });
-    // don't proceed if there was an error:
-    if (response.statusCode !== 200) {
-      throw new Error(`there was an error while executing report ${filename}`);
+    this.log(['recurring'], 'executing report %s', filename);
+    try {
+      const response = await this.inject({ method: 'get', url: filename, credentials: { id: 'server' } });
+      // don't proceed if there was an error:
+      if (response.statusCode !== 200) {
+        throw new Error(`there was an error while executing report ${filename}`);
+      }
+      this.log(['recurring', 'report'], response.result);
+      // option to skip uploading:
+      if (noS3) {
+        return response.result;
+      }
+      const result = await this.uploadToS3(filename, response.result);
+      if (emails) {
+        result.emailResult = await this.email(filename, response.result, result, [emails]);
+      }
+      this.log(['recurring', 'email'], result);
+      return result;
+    } catch (e) {
+      this.log(['recurring', 'error'], e);
     }
-    // option to skip uploading:
-    if (noS3) {
-      return response.result;
-    }
-    const result = await this.uploadToS3(filename, response.result);
-    if (emails) {
-      result.emailResult = await this.email(filename, response.result, result, [emails]);
-    }
-    return result;
   }
 };
