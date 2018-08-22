@@ -19,6 +19,7 @@ const register = async (server, options) => {
   }
   if (server.settings.app.recurringReports) {
     server.settings.app.recurringReports.forEach(recurringReport => {
+      server.log(['recurring'], `scheduling report ${recurringReport.name} to run at interval ${recurringReport.interval}`);
       // run the report, save to s3 if saveTos3 is true:
       server.scheduleMethod(
         recurringReport.interval,
