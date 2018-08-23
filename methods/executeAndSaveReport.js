@@ -25,7 +25,7 @@ module.exports = {
       if (emails) {
         result.emailResult = await this.email(filename, response.result, result, [emails]);
       }
-      this.log(['recurring', 'email'], `report ${filename} emailed to ${emails.join()}`);
+      this.log(['recurring', 'email'], `report ${filename} emailed to ${emails}`);
       return result;
     } catch (e) {
       this.log(['recurring', 'error'], e);
