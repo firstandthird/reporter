@@ -8,6 +8,7 @@ envVars:
     salt: '{{getEnv("AUTH_SALT")}}'
     isSecure: '{{getEnv("IS_SECURE", false)}}'
   email:
+    from: '{{getEnv("REPORTER_FROM_EMAIL")}}'
     host: '{{getEnv("SMTP_HOST", "")}}'
     port: '{{getEnv("SMTP_PORT", "")}}'
     user: '{{getEnv("SMTP_USER", "")}}'
