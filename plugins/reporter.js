@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const executeAndSaveReport = require('../methods/executeAndSaveReport');
 
 const register = async (server, options) => {
   server.decorate('server', 'reports', {
@@ -16,6 +17,10 @@ const register = async (server, options) => {
   if (fs.existsSync(customSetter)) {
     const argsArray = await require(customSetter)();
     server.methods.setArgs.apply(server, argsArray);
+  }
+  // ensure this is available:
+  if (!server.methods.executeAndSaveReport) {
+    server.method('executeAndSaveReport', executeAndSaveReport);
   }
   if (server.settings.app.recurringReports) {
     server.settings.app.recurringReports.forEach(recurringReport => {
