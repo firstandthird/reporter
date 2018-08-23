@@ -8,7 +8,7 @@ argsDir: '{{CWD}}'
 reportsDir: '{{CWD}}/reports'
 plugins:
   hapi-robots:
-    env: 'disallow all robots even in production environment' 
+    env: 'disallow all robots even in production environment'
   hapi-password:
     password: '{{envVars.hapiPassword.password}}'
     salt: '{{envVars.hapiPassword.salt}}'
@@ -34,5 +34,6 @@ plugins:
     port: '{{envVars.email.port}}'
     user: '{{envVars.email.user}}'
     password: '{{envVars.email.password}}'
+    from: '{{envVars.email.from}}'
   hapi-transform-table:
   hapi-transform-csv:
