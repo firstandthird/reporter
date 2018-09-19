@@ -1,7 +1,7 @@
 // returns a table listing all registered reports:
 exports.routes = {
   method: 'GET',
-  path: '/',
+  path: '/reports',
   config: {
     plugins: {
       'hapi-transform-table': {}
@@ -23,5 +23,13 @@ exports.routes = {
       });
     });
     return h.response(links);
+  }
+};
+
+exports.redirect = {
+  method: 'GET',
+  path: '/',
+  handler(request, h) {
+    return h.redirect('/reports.html');
   }
 };

@@ -250,7 +250,7 @@ tap.test('/ will return a list of reports in json/html etc', async (t) => {
   rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
   rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
-  const response = await rapptor.server.inject({ url: '/', credentials: { password: process.env.AUTH_PASSWORD } });
+  const response = await rapptor.server.inject({ url: '/reports', credentials: { password: process.env.AUTH_PASSWORD } });
 
   t.match(response.result, [{
     name: 'testrecurring',
