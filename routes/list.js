@@ -30,6 +30,6 @@ exports.redirect = {
   method: 'GET',
   path: '/',
   handler(request, h) {
-    return h.redirect('/reports');
+    return h.redirect('/reports.html');
   }
 };
