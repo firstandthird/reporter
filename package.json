@@ -42,7 +42,7 @@
     "hapi-transform-csv": "^1.0.6",
     "hapi-transform-table": "^1.7.1",
     "nodemailer": "^4.6.7",
-    "rapptor": "^6.0.0",
+    "rapptor": "^6.1.0",
     "s3put": "^4.0.0"
   }
 }
