@@ -1,5 +1,5 @@
 module.exports = {
-  async method(filename, noS3, emails) {
+  async method(filename, args, noS3, emails) {
     // default extension to csv:
     if (filename.split('.').length === 1) {
       filename = `${filename}.csv`;
@@ -7,8 +7,11 @@ module.exports = {
     if (!filename.startsWith('/')) {
       filename = `/${filename}`;
     }
+    if (args) {
+      filename = `${filename}?${args}`;
+    }
     // inject with credentials to bypass hapi-password:
-    this.log(['recurring'], `executing report ${filename}`);
+    this.log(['recurring'], `executing report ${filename} with ${args}`);
     try {
       const response = await this.inject({ method: 'get', url: filename, credentials: { id: 'server' } });
       // don't proceed if there was an error:

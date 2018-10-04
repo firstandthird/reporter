@@ -3,6 +3,8 @@ const tap = require('tap');
 const os = require('os');
 
 process.env.AUTH_PASSWORD = 'password';
+process.env.AUTH_SALT = 'saltydog';
+process.env.REPORTER_FROM_EMAIL = 'admin@example.com';
 
 tap.test('can start instance', async(t) => {
   const rapptor = new Rapptor({
@@ -100,14 +102,12 @@ tap.test('addReport html', async (t) => {
   await rapptor.start();
   rapptor.server.methods.addReport('test', () => ({ status: 'ok' }));
   const { payload } = await rapptor.server.inject({ url: '/test.html', credentials: { password: process.env.AUTH_PASSWORD } });
-  t.match(payload, `<table>
-<thead>
+  t.match(payload, `<thead>
 <tr><th>Name</th><th>Value</th></tr>
 </thead>
 
 <tbody><tr><td>status</td><td>ok</td></tr>
-</tbody>
-</table>`);
+</tbody>`);
   await rapptor.stop();
   t.end();
 });
@@ -280,9 +280,8 @@ tap.test('/ will return a list of reports in json/html etc', async (t) => {
     html: '/btest.html',
     json: '/btest.json'
   }]);
-  const response2 = await rapptor.server.inject({ url: '/.html', credentials: { password: process.env.AUTH_PASSWORD } });
-  t.match(response2.result, `<table>
-<thead>
+  const response2 = await rapptor.server.inject({ url: '/reports.html', credentials: { password: process.env.AUTH_PASSWORD } });
+  t.match(response2.result, `<thead>
 <tr><th>name</th><th>csv</th><th>html</th><th>json</th></tr>
 </thead>
 
@@ -291,8 +290,7 @@ tap.test('/ will return a list of reports in json/html etc', async (t) => {
 <tr><td>ctest</td><td>/ctest.csv</td><td>/ctest.html</td><td>/ctest.json</td></tr>
 <tr><td>atest</td><td>/atest.csv</td><td>/atest.html</td><td>/atest.json</td></tr>
 <tr><td>btest</td><td>/btest.csv</td><td>/btest.html</td><td>/btest.json</td></tr>
-</tbody>
-</table>`);
+</tbody>`);
   await rapptor.stop();
   t.end();
 });
@@ -356,7 +354,7 @@ tap.test('can email the s3 link to specified recipients', async(t) => {
       Location: 'http://s3.com/some-path/'
     };
   }, { extend: true });
-  const result = await rapptor.server.methods.executeAndSaveReport('testreport', false, ['bob@somewhere.com']);
+  const result = await rapptor.server.methods.executeAndSaveReport('testreport', 'one=something&two=else', false, ['bob@somewhere.com']);
   // results will include the result of the email transfer as well
   t.ok(result.emailResult, {
     mailResult: {
