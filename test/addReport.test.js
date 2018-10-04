@@ -367,3 +367,20 @@ tap.test('can email the s3 link to specified recipients', async(t) => {
   await rapptor.stop();
   t.end();
 });
+
+tap.test('can pass arguments to the recurring configs', async(t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'recurring',
+    configPath: __dirname,
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.executeAndSaveReport = (name, args, save, emails) => {
+    t.match(args, 'make=true');
+  };
+  await new Promise(resolve => setTimeout(resolve, 4000));
+  await rapptor.stop();
+  t.end();
+});
