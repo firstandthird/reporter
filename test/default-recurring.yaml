@@ -4,6 +4,8 @@ recurringReports:
     name: 'testrecurring'
     interval: '* * * * * *'
     format: 'csv'
+    args:
+      make: 'true'
     saveToS3: true
 plugins:
   hapi-password:

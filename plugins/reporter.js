@@ -1,5 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+
+const qs = require('querystring');
+
 const executeAndSaveReport = require('../methods/executeAndSaveReport');
 
 const register = async (server, options) => {
@@ -24,12 +27,16 @@ const register = async (server, options) => {
   }
   if (server.settings.app.recurringReports) {
     server.settings.app.recurringReports.forEach(recurringReport => {
-      server.log(['recurring'], `scheduling report ${recurringReport.name} to run at interval ${recurringReport.interval}`);
+      server.log(['recurring'], { message: `scheduling report ${recurringReport.name} to run at interval ${recurringReport.interval}`, recurringReport });
       // run the report, save to s3 if saveTos3 is true:
       server.scheduleMethod(
         recurringReport.interval,
-        `executeAndSaveReport('${recurringReport.name}.${recurringReport.format}',
-         ${!recurringReport.saveToS3}, "${recurringReport.emails}")`
+        `executeAndSaveReport(
+          '${recurringReport.name}.${recurringReport.format}',
+          '${qs.stringify(recurringReport.args)}',
+          ${!recurringReport.saveToS3},
+          "${recurringReport.emails}",
+        )`
       );
     });
   }
