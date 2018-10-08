@@ -4,11 +4,15 @@ module.exports = {
     if (reportName.split('.').length === 1) {
       reportName = `${reportName}.csv`;
     }
+
+    if (!reportName.startsWith('/')) {
+      reportName = `/${reportName}`;
+    }
     if (!filename) {
       filename = reportName;
     }
-    if (!reportName.startsWith('/')) {
-      reportName = `/${reportName}`;
+    if (!filename.startsWith('/')) {
+      filename = `/${filename}`;
     }
     if (args) {
       reportName = `${reportName}?${args}`;
