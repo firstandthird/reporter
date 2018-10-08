@@ -377,7 +377,7 @@ tap.test('can pass arguments to the recurring configs', async(t) => {
     }
   });
   await rapptor.start();
-  rapptor.server.methods.executeAndSaveReport = (name, args, save, emails) => {
+  rapptor.server.methods.executeAndSaveReport = (name, filename, args, save, noPrefix, emails) => {
     t.match(args, 'make=true');
   };
   await new Promise(resolve => setTimeout(resolve, 4000));
