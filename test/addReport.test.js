@@ -177,8 +177,10 @@ tap.test('can save things to s3', async (t) => {
   });
   await rapptor.start();
   try {
-    await rapptor.server.uploadToS3('reporter_test.csv', 'this,is,some,stuff,I,am,saving');
-    await rapptor.server.uploadToS3('reporter_test.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
+    const path = await rapptor.server.uploadToS3('reporter_test_{ time }.csv', 'this,is,some,stuff,I,am,saving', true);
+    t.match(path.Location, /reporter_test_[0-9]*\.csv$/i, 'Time Replacement did not work');
+    const path2 = await rapptor.server.uploadToS3('reporter_test_{ time }.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
+    t.match(path2.Location, /reporter_test_[0-9]*\.html$/i, 'Time Replacement did not work');
   } catch (e) {
     // it is fine if this isn't set up, the failure is in s3Put
   }
