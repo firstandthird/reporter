@@ -177,8 +177,10 @@ tap.test('can save things to s3', async (t) => {
   });
   await rapptor.start();
   try {
-    await rapptor.server.uploadToS3('reporter_test.csv', 'this,is,some,stuff,I,am,saving');
-    await rapptor.server.uploadToS3('reporter_test.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
+    const path = await rapptor.server.uploadToS3('reporter_test_{ time }.csv', 'this,is,some,stuff,I,am,saving', true);
+    t.match(path.Location, /reporter_test_[0-9]*\.csv$/i, 'Time Replacement did not work');
+    const path2 = await rapptor.server.uploadToS3('reporter_test_{ time }.html', '<h1>this</h1><table style="width:100%"><tr><td>is</td><td>some</td><td>stuff</td></tr><td>I</td><td>am</td><td>saving</td></tr></table>');
+    t.match(path2.Location, /reporter_test_[0-9]*\.html$/i, 'Time Replacement did not work');
   } catch (e) {
     // it is fine if this isn't set up, the failure is in s3Put
   }
@@ -207,6 +209,30 @@ tap.test('can run a report and pass the results to uploadToS3', async (t) => {
   } catch (e) {
     t.equal(e.toString(), 'Error: there was an error while executing report /gibberish.csv');
   }
+  await rapptor.stop();
+  t.end();
+});
+
+tap.test('can run a report and pass a new filename to uploadToS3', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'reporter',
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
+    console.log(filename);
+    t.ok(['/testreport.csv', '/a-real-name-{ date }.csv', '/some-new-name.csv'].includes(filename), 'passes filename to uploadToS3');
+    return {
+      Location: 'http://s3.com/some-path/'
+    };
+  }, { extend: true });
+
+  await rapptor.server.methods.executeAndSaveReport('testreport', 'some-new-name.csv');
+  await rapptor.server.methods.executeAndSaveReport('testreport');
+  await rapptor.server.methods.executeAndSaveReport('other-report.html', 'a-real-name-{ date }.html');
+
   await rapptor.stop();
   t.end();
 });
@@ -377,7 +403,7 @@ tap.test('can pass arguments to the recurring configs', async(t) => {
     }
   });
   await rapptor.start();
-  rapptor.server.methods.executeAndSaveReport = (name, args, save, emails) => {
+  rapptor.server.methods.executeAndSaveReport = (name, filename, args, save, noPrefix, emails) => {
     t.match(args, 'make=true');
   };
   await new Promise(resolve => setTimeout(resolve, 4000));

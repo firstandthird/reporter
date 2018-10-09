@@ -33,8 +33,10 @@ const register = async (server, options) => {
         recurringReport.interval,
         `executeAndSaveReport(
           '${recurringReport.name}.${recurringReport.format}',
+          '${recurringReport.filename}',
           '${qs.stringify(recurringReport.args)}',
           ${!recurringReport.saveToS3},
+          ${recurringReport.noPrefix},
           "${recurringReport.emails}",
         )`
       );
