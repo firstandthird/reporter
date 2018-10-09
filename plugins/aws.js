@@ -12,6 +12,8 @@ const register = (server, options) => {
     stream.push(null);
     stream._read = function noop() {};
     filename = filename.replace(/\{\s*date\s*\}/gi, datefmt('%Y-%m-%d', new Date()));
+    const ts = Math.ceil((new Date()).getTime() / 1000);
+    filename = filename.replace(/\{\s*time\s*\}/gi, ts);
     return s3put(stream, Object.assign({ filename, noprefix }, settings));
   });
 };
