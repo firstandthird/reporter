@@ -1,6 +1,5 @@
 const s3put = require('s3put');
 const Readable = require('stream').Readable;
-const datefmt = require('datefmt');
 
 const register = (server, options) => {
   const settings = server.settings.app.s3;
@@ -11,9 +10,6 @@ const register = (server, options) => {
     stream.push(text);
     stream.push(null);
     stream._read = function noop() {};
-    filename = filename.replace(/\{\s*date\s*\}/gi, datefmt('%Y-%m-%d', new Date()));
-    const ts = Math.ceil((new Date()).getTime() / 1000);
-    filename = filename.replace(/\{\s*time\s*\}/gi, ts);
     return s3put(stream, Object.assign({ filename, noprefix }, settings));
   });
 };

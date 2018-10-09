@@ -1,3 +1,5 @@
+const datefmt = require('datefmt');
+
 module.exports = {
   async method(reportName, filename, args, noS3, noPrefix, emails) {
     // default extension to csv:
@@ -14,6 +16,7 @@ module.exports = {
     if (!filename.startsWith('/')) {
       filename = `/${filename}`;
     }
+
     if (args) {
       reportName = `${reportName}?${args}`;
     }
@@ -30,6 +33,11 @@ module.exports = {
       if (noS3) {
         return response.result;
       }
+
+
+      filename = filename.replace(/\{\s*date\s*\}/gi, datefmt('%Y-%m-%d', new Date()));
+      const ts = Math.ceil((new Date()).getTime() / 1000);
+      filename = filename.replace(/\{\s*time\s*\}/gi, ts);
 
       const result = await this.uploadToS3(filename, response.result, noPrefix);
       this.log(['recurring', 's3'], `report ${filename} uploaded to S3`);
