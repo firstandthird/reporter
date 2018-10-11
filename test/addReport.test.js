@@ -394,6 +394,33 @@ tap.test('can email the s3 link to specified recipients', async(t) => {
   t.end();
 });
 
+tap.test('passing undefined to filename will use reportName for filename', async(t) => {
+  process.env.AUTH_PASSWORD = 'password';
+  process.env.AUTH_SALT = 'salt';
+
+  const rapptor = new Rapptor({
+    configPrefix: 'recurring',
+    configPath: __dirname,
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  t.ok(rapptor.server.email, 'email plugin was registered');
+  // mock the uploadToS3 function:
+  rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
+    //t.ok(['/testreport.csv', '/testrecurring.csv'].includes(filename), 'passes filename to uploadToS3');
+    t.equals(filename, '/testreport.csv', 'didn\'t used the report name as filename');
+    return {
+      Location: 'http://s3.com/some-path/'
+    };
+  }, { extend: true });
+  await rapptor.server.methods.executeAndSaveReport('testreport', undefined, 'one=something&two=else', false, true, null);
+  // results will include the result of the email transfer as well
+  await rapptor.stop();
+  t.end();
+});
+
 tap.test('can pass arguments to the recurring configs', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'recurring',

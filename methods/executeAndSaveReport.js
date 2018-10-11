@@ -10,7 +10,7 @@ module.exports = {
     if (!reportName.startsWith('/')) {
       reportName = `/${reportName}`;
     }
-    if (!filename) {
+    if (!filename || filename === undefined) {
       filename = reportName;
     }
     if (!filename.startsWith('/')) {
@@ -38,6 +38,8 @@ module.exports = {
       filename = filename.replace(/\{\s*date\s*\}/gi, datefmt('%Y-%m-%d', new Date()));
       const ts = Math.ceil((new Date()).getTime() / 1000);
       filename = filename.replace(/\{\s*time\s*\}/gi, ts);
+
+      this.log(['recurring', 'report'], `Uploading report ${reportName} as ${filename}`);
 
       const result = await this.uploadToS3(filename, response.result, noPrefix);
       this.log(['recurring', 's3'], `report ${filename} uploaded to S3`);
