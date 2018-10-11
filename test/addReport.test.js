@@ -222,7 +222,6 @@ tap.test('can run a report and pass a new filename to uploadToS3', async (t) => 
   });
   await rapptor.start();
   rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
-    console.log(filename);
     t.ok(['/testreport.csv', '/a-real-name-{ date }.csv', '/some-new-name.csv'].includes(filename), 'passes filename to uploadToS3');
     return {
       Location: 'http://s3.com/some-path/'
