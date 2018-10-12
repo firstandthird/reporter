@@ -222,7 +222,6 @@ tap.test('can run a report and pass a new filename to uploadToS3', async (t) => 
   });
   await rapptor.start();
   rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
-    console.log(filename);
     t.ok(['/testreport.csv', '/a-real-name-{ date }.csv', '/some-new-name.csv'].includes(filename), 'passes filename to uploadToS3');
     return {
       Location: 'http://s3.com/some-path/'
@@ -390,6 +389,33 @@ tap.test('can email the s3 link to specified recipients', async(t) => {
       html: 'and is available for review <a href="http://s3.com/some-path/">here. </a>'
     }
   });
+  await rapptor.stop();
+  t.end();
+});
+
+tap.test('passing undefined to filename will use reportName for filename', async(t) => {
+  process.env.AUTH_PASSWORD = 'password';
+  process.env.AUTH_SALT = 'salt';
+
+  const rapptor = new Rapptor({
+    configPrefix: 'recurring',
+    configPath: __dirname,
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  t.ok(rapptor.server.email, 'email plugin was registered');
+  // mock the uploadToS3 function:
+  rapptor.server.decorate('server', 'uploadToS3', (existing) => (filename, text) => {
+    //t.ok(['/testreport.csv', '/testrecurring.csv'].includes(filename), 'passes filename to uploadToS3');
+    t.equals(filename, '/testreport.csv', 'didn\'t used the report name as filename');
+    return {
+      Location: 'http://s3.com/some-path/'
+    };
+  }, { extend: true });
+  await rapptor.server.methods.executeAndSaveReport('testreport', undefined, 'one=something&two=else', false, true, null);
+  // results will include the result of the email transfer as well
   await rapptor.stop();
   t.end();
 });
