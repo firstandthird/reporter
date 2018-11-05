@@ -1,6 +1,6 @@
 {
   "name": "@firstandthird/reporter",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "library to help create a reports service",
   "main": "cli.js",
   "scripts": {
