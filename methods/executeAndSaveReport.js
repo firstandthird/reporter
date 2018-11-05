@@ -10,9 +10,11 @@ module.exports = {
     if (!reportName.startsWith('/')) {
       reportName = `/${reportName}`;
     }
-    if (!filename || filename === undefined) {
+
+    if (!filename || filename === 'undefined' || filename === undefined) {
       filename = reportName;
     }
+
     if (!filename.startsWith('/')) {
       filename = `/${filename}`;
     }
