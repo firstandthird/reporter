@@ -239,12 +239,22 @@ tap.test('can run a report and pass a new filename to uploadToS3', async (t) => 
 tap.test('can specify reports to re-run at regular intervals', async(t) => {
   const rapptor = new Rapptor({
     configPrefix: 'recurring',
+    configPath: __dirname,
     context: {
       LIBDIR: process.cwd()
     }
   });
   await rapptor.start();
   await new Promise(resolve => setTimeout(resolve, 4000));
+  const { result } = await rapptor.server.inject({
+    url: '/scheduled',
+    credentials: { password: process.env.AUTH_PASSWORD }
+  });
+  t.equal(result[0].name, 'testrecurring.csv');
+  // check the formatting for valid date:
+  t.equal(result[0].next.split(':').length, 3);
+  t.equal(result[0].next.split(',').length, 3);
+  t.equal(result[0].next.split(' ').length, 6);
   await rapptor.stop();
   t.end();
 });
