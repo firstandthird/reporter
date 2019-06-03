@@ -25,11 +25,12 @@ const register = async (server, options) => {
   if (!server.methods.executeAndSaveReport) {
     server.method('executeAndSaveReport', executeAndSaveReport);
   }
+  const scheduledReports = {};
   if (server.settings.app.recurringReports) {
     server.settings.app.recurringReports.forEach(recurringReport => {
       server.log(['recurring'], { message: `scheduling report ${recurringReport.name} to run at interval ${recurringReport.interval}`, recurringReport });
       // run the report, save to s3 if saveTos3 is true:
-      server.scheduleMethod(
+      const cronjob = server.scheduleMethod(
         recurringReport.interval,
         `executeAndSaveReport(
           '${recurringReport.name}.${recurringReport.format}',
@@ -40,8 +41,10 @@ const register = async (server, options) => {
           "${recurringReport.emails}",
         )`
       );
+      scheduledReports[`${recurringReport.name}.${recurringReport.format}`] = cronjob;
     });
   }
+  server.expose('scheduledReports', scheduledReports);
 };
 
 exports.plugin = {
