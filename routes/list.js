@@ -9,11 +9,14 @@ exports.routes = {
   },
   handler(request, h) {
     const server = request.server;
-    const base = server.settings.app.routePrefix ?
-      `${server.settings.app.routePrefix}`
-      : '';
+    const settings = server.settings.app;
+    const base = settings.routePrefix ? `${server.settings.app.routePrefix}` : '';
     const links = [];
     Object.keys(server.methods.reports).forEach(key => {
+      // skip any that are in the hiddenReports list:
+      if (settings.hiddenReports && settings.hiddenReports.includes(key)) {
+        return;
+      }
       const root = `${base}/${key}`;
       links.push({
         name: key,

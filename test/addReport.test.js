@@ -330,6 +330,57 @@ tap.test('/ will return a list of reports in json/html etc', async (t) => {
   t.end();
 });
 
+tap.test('hide will conceal a report from the list of reports', async (t) => {
+  const rapptor = new Rapptor({
+    configPrefix: 'email',
+    configPath: __dirname,
+    context: {
+      LIBDIR: process.cwd()
+    }
+  });
+  await rapptor.start();
+  rapptor.server.methods.addReport('ctest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('atest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('btest', () => ({ status: 'ok' }));
+  rapptor.server.methods.addReport('alsotesthidden', () => ({ status: 'ok' }));
+  const response = await rapptor.server.inject({ url: '/reports', credentials: { password: process.env.AUTH_PASSWORD } });
+
+  t.match(response.result, [{
+    name: 'testrecurring',
+    csv: '/testrecurring.csv',
+    html: '/testrecurring.html',
+    json: '/testrecurring.json'
+  }, {
+    name: 'testreport',
+    csv: '/testreport.csv',
+    html: '/testreport.html',
+    json: '/testreport.json'
+  }, {
+    name: 'ctest',
+    csv: '/ctest.csv',
+    html: '/ctest.html',
+    json: '/ctest.json'
+  },
+  {
+    name: 'atest',
+    csv: '/atest.csv',
+    html: '/atest.html',
+    json: '/atest.json'
+  },
+  {
+    name: 'btest',
+    csv: '/btest.csv',
+    html: '/btest.html',
+    json: '/btest.json'
+  }]);
+  // verify it is not in the html either:
+  const response2 = await rapptor.server.inject({ url: '/reports.html', credentials: { password: process.env.AUTH_PASSWORD } });
+  t.notMatch(response2.result, 'alsotesthidden');
+  t.notMatch(response2.result, 'testhidden');
+  await rapptor.stop();
+  t.end();
+});
+
 tap.test('supports login etc via hapi-password', async (t) => {
   process.env.AUTH_PASSWORD = 'password';
   process.env.AUTH_SALT = 'salt';
