@@ -39,3 +39,7 @@ s3:
   bucket: '{{ENV.AWS_BUCKET}}'
   profile: '{{ENV.AWS_PROFILE}}'
 reportsDir: '{{CWD}}/test/reports'
+# you can hide reports by listing them under hiddenReports
+hiddenReports: 
+  - 'testhidden' # hide the testhidden.js report
+  - 'alsotesthidden'  # hide the one that is manually added with addReport
